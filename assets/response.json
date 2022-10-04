@@ -1,0 +1,9 @@
+{
+    "Carparks": {
+        "carparkId": 1,
+        "address": "BLK 11/12/13 YORK HILL CAR PARK",
+        "carparkType": "single",
+        "x_coord": 1.290270,
+        "y_coord": 103.851959
+    }
+}
