@@ -14,7 +14,7 @@ class PublicCarparksService {
   }*/
 
   Future<Map<String, dynamic>>  getPublicCarparks(double x, double y) async {
-    final String url = 'http://192.168.1.211:5000/carparks?x_coord=$x&y_coord=$y&limit=5';
+    final String url = 'http://192.168.0.135:5000/carparks/top/all?x_coord=$x&y_coord=$y&limit=5';
     var response = await http.get(Uri.parse(url));
     var json = convert.jsonDecode(response.body);
     /*json.forEach((key, value){
