@@ -47,7 +47,9 @@ class MapScreenState extends State<MapScreen> {
 
   void _setMarker() {
     setState(() {
+      _marker.clear();
       _marker.addAll(_list);
+      _list.clear();
     });
   }
 
