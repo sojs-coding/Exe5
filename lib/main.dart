@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_parkwhere/screens/map.dart';
+import 'package:flutter_parkwhere/screens/Map.dart';
 
 void main() => runApp(MyApp());
 
