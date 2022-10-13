@@ -8,7 +8,9 @@ import 'package:flutter_parkwhere/services/AllCarparksService.dart';
 import 'package:flutter_parkwhere/services/PrivateCarparksService.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_parkwhere/services/LocationService.dart';
+import '../models/PublicCarpark.dart';
 import '../services/PublicCarparksService.dart';
+import 'bottomListSheet.dart';
 
 class MapScreen extends StatefulWidget {
   @override
@@ -21,6 +23,9 @@ class MapScreenState extends State<MapScreen> {
     zoom: 14.4746,
   );
 
+  
+  late List<PublicCarpark> _nearest5Carparks = [];
+  List<Marker> _nearest5markers = [];
   List<Marker> _marker = [];
   List<Marker> _list = [];
   late String _mapStyle;
@@ -56,40 +61,96 @@ class MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Google Maps'),),
-      body: Column(
-        children: [
+    return Listener(
+      onPointerDown: (_) {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.focusedChild?.unfocus();
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset : false,
+        appBar: null,
+        body: Stack(
+        children: <Widget> [
           Row(
             children: [
-            Expanded(
-              child: TextFormField(
-                controller: _searchController,
-                textCapitalization: TextCapitalization.words,
-              ),
-            ),
-            IconButton(
-              onPressed: () async {
-                var place = await LocationService().getPlace(_searchController.text);
-                List location = await _goToPlace(place);
-                _getPublicCarparks(location);
-              }, 
-              icon: Icon(Icons.search),
+              Expanded(
+                child: GoogleMap(
+                  mapToolbarEnabled: false,
+                  mapType: MapType.normal,
+                  markers: Set<Marker>.of(_marker),
+                  initialCameraPosition: _kGooglePlex,
+                  onMapCreated: (GoogleMapController controller) {
+                    _onMapCreated(controller);
+                  },
+                ),
               ),
             ],
           ),
-          Expanded(
-            child: GoogleMap(
-              mapType: MapType.normal,
-              markers: Set<Marker>.of(_marker),
-              initialCameraPosition: _kGooglePlex,
-              onMapCreated: (GoogleMapController controller) {
-                _onMapCreated(controller);
-              },
+          Positioned(
+            top: 40 ,
+            right: 15,
+            left: 15,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(20)
+                ),
+              ),
+              child: Row(
+                children: <Widget> [
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      cursorColor: Colors.black,
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.go,
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 15),
+                          hintText: "Search..."),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: IconButton(
+                      onPressed: () async {
+                        var place = await LocationService().getPlace(_searchController.text);
+                        List location = await _goToPlace(place);
+                        _getPublicCarparks(location);
+                      }, 
+                      icon: Icon(Icons.search),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            top: 105,
+            right: 5,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: CircleBorder(),
+              ),
+              onPressed: () => showModalBottomSheet(
+                context: context, 
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  )
+                ),
+                builder: (context) => bottomListSheet(nearest5Carparks: _nearest5Carparks),
+              ),
+             child: Icon(Icons.all_inbox_sharp),
             ),
           ),
         ],
-      ),
+      ),),
     );
   }
 
@@ -132,6 +193,7 @@ class MapScreenState extends State<MapScreen> {
         )
       ),
     );
+    _nearest5Carparks.add(PublicCarpark.fromJson(key, value));
     });
     _setMarker();
   }
