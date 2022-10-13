@@ -43,6 +43,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Visual Paradigm
+/Visual Paradigm/Exe5CarparkApp.vpp.bak*
+
 # Created by https://www.toptal.com/developers/gitignore/api/flutter
 # Edit at https://www.toptal.com/developers/gitignore?templates=flutter
 
