@@ -4,10 +4,11 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_parkwhere/services/AllCarparksService.dart';
+import 'package:flutter_parkwhere/services/PrivateCarparksService.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-import 'package:flutter_parkwhere/services/location_service.dart';
-import '../services/publicCarparks_service.dart';
+import 'package:flutter_parkwhere/services/LocationService.dart';
+import '../services/PublicCarparksService.dart';
 
 class MapScreen extends StatefulWidget {
   @override
@@ -120,7 +121,7 @@ class MapScreenState extends State<MapScreen> {
     final double lat = location[0];
     final double lng = location[1];
 
-    var response = await PublicCarparksService().getPublicCarparks(lat, lng);
+    var response = await AllCarparksService().getCarparks(lat, lng);
     //print(response.length);
     response.forEach((key, value){
       _list.add( 
