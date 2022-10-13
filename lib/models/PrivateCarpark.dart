@@ -15,5 +15,6 @@ class PrivateCarpark extends Carpark {
         saturdayParkingFare = parsedJson['saturday_parking_fare'],
         sundayPhParkingFare = parsedJson['sunday_ph_parking_fare'],
         weekdayEntryFare = parsedJson['weekday_entry_fare'],
-        weekendEntryFare = parsedJson['weekend_entry_fare'];
+        weekendEntryFare = parsedJson['weekend_entry_fare'],
+        super.fromJson(id, parsedJson);
 }

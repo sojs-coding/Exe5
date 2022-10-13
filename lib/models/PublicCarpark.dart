@@ -23,5 +23,6 @@ class PublicCarpark extends Carpark {
         nightParking = parsedJson['night_parking'],
         carparkDeckNumber = parsedJson['carpark_deck_number'],
         gantryHeight = parsedJson['gantry_height'],
-        carparkBasement = parsedJson['carpark_basement'];
+        carparkBasement = parsedJson['carpark_basement'],
+        super.fromJson(id, parsedJson);
 }

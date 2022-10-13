@@ -86,7 +86,6 @@ class MapScreenState extends State<MapScreen> {
               onMapCreated: (GoogleMapController controller) {
                 _onMapCreated(controller);
               },
-              
             ),
           ),
         ],
