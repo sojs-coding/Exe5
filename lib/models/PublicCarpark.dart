@@ -10,7 +10,7 @@ class PublicCarpark extends Carpark {
   late final String freeParking;
   late final bool nightParking;
   late final int carparkDeckNumber;
-  late final Float gantryHeight;
+  late final double gantryHeight;
   late final bool carparkBasement;
 
   PublicCarpark();

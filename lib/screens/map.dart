@@ -26,8 +26,7 @@ class MapScreenState extends State<MapScreen> {
   
   late List<PublicCarpark> _nearest5Carparks = [];
   List<Marker> _nearest5markers = [];
-  List<Marker> _marker = [];
-  List<Marker> _list = [];
+  List<Marker> _markers = [];
   late String _mapStyle;
 
   late GoogleMapController _mapController;
@@ -53,9 +52,6 @@ class MapScreenState extends State<MapScreen> {
 
   void _setMarker() {
     setState(() {
-      _marker.clear();
-      _marker.addAll(_list);
-      _list.clear();
     });
   }
 
@@ -79,7 +75,7 @@ class MapScreenState extends State<MapScreen> {
                 child: GoogleMap(
                   mapToolbarEnabled: false,
                   mapType: MapType.normal,
-                  markers: Set<Marker>.of(_marker),
+                  markers: Set<Marker>.of(_markers),
                   initialCameraPosition: _kGooglePlex,
                   onMapCreated: (GoogleMapController controller) {
                     _onMapCreated(controller);
@@ -164,7 +160,7 @@ class MapScreenState extends State<MapScreen> {
         CameraPosition(target: LatLng(lat, lng), zoom: 17),
       ),
     );
-    _list.add( 
+    _markers.add(
       Marker(
         markerId: MarkerId('1'),
         position: LatLng(lat, lng),
@@ -181,10 +177,11 @@ class MapScreenState extends State<MapScreen> {
     final double lat = location[0];
     final double lng = location[1];
 
-    var response = await AllCarparksService().getCarparks(lat, lng);
+    var response = await PublicCarparksService().getCarparks(lat, lng);
     //print(response.length);
+    _nearest5Carparks.clear();
     response.forEach((key, value){
-      _list.add( 
+      _markers.add(
       Marker(
         markerId: MarkerId(key),
         position: LatLng(value['x_coord_WGS84'], value['y_coord_WGS84']),
