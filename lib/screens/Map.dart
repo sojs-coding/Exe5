@@ -10,7 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_parkwhere/services/LocationService.dart';
 import '../models/PublicCarpark.dart';
 import '../services/PublicCarparksService.dart';
-import 'bottomListSheet.dart';
+import 'BottomListSheet.dart';
 
 class MapScreen extends StatefulWidget {
   @override
