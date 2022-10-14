@@ -4,14 +4,14 @@ import 'dart:ffi';
 import 'Carpark.dart';
 
 class PublicCarpark extends Carpark {
-  late String carparkType;
-  late bool electronicParkingSystem;
-  late String shortTermParking;
-  late String freeParking;
-  late bool nightParking;
-  late int carparkDeckNumber;
-  late Float gantryHeight;
-  late bool carparkBasement;
+  late final String carparkType;
+  late final bool electronicParkingSystem;
+  late final String shortTermParking;
+  late final String freeParking;
+  late final bool nightParking;
+  late final int carparkDeckNumber;
+  late final Float gantryHeight;
+  late final bool carparkBasement;
 
   PublicCarpark();
 

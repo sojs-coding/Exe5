@@ -2,11 +2,11 @@
 import 'Carpark.dart';
 
 class PrivateCarpark extends Carpark {
-  late double weekdayParkingFare;
-  late double saturdayParkingFare;
-  late double sundayPhParkingFare;
-  late double weekdayEntryFare;
-  late double weekendEntryFare;
+  late final double weekdayParkingFare;
+  late final double saturdayParkingFare;
+  late final double sundayPhParkingFare;
+  late final double weekdayEntryFare;
+  late final double weekendEntryFare;
 
   PrivateCarpark();
 
