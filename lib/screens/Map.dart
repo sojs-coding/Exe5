@@ -8,6 +8,7 @@ import 'package:flutter_parkwhere/services/AllCarparksService.dart';
 import 'package:flutter_parkwhere/services/PrivateCarparksService.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_parkwhere/services/LocationService.dart';
+import '../models/PrivateCarpark.dart';
 import '../models/PublicCarpark.dart';
 import '../services/PublicCarparksService.dart';
 import 'Sort.dart';
@@ -26,7 +27,7 @@ class MapScreenState extends State<MapScreen> {
 
   
   late List<dynamic> _nearest5Carparks = [];
-  List<Marker> _nearest5markers = [];
+  late List<double> location = [];
   List<Marker> _markers = [];
   late String _mapStyle;
 
@@ -115,8 +116,7 @@ class MapScreenState extends State<MapScreen> {
                     child: IconButton(
                       onPressed: () async {
                         var place = await LocationService().getPlace(_searchController.text);
-                        List location = await _goToPlace(place);
-                        _nearest5Carparks = location;
+                        location = await _goToPlace(place);
                         _getCarparks(location);
                       }, 
                       icon: Icon(Icons.search),
@@ -135,7 +135,7 @@ class MapScreenState extends State<MapScreen> {
               ),
               onPressed: () async {
                 Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                    SortScreen(carparksToSortLatLng: _nearest5Carparks)));
+                    SortScreen(carparksToSort: _nearest5Carparks, currentLocation: location,)));
               },
              child: Icon(Icons.all_inbox_sharp),
             ),
@@ -174,16 +174,23 @@ class MapScreenState extends State<MapScreen> {
 
     var response = await AllCarparksService().getCarparks(lat, lng);
     //print(response.length);
+    _nearest5Carparks.clear();
     response.forEach((key, value){
       _markers.add(
-      Marker(
-        markerId: MarkerId(key),
-        position: LatLng(value['x_coord_WGS84'], value['y_coord_WGS84']),
-        infoWindow: InfoWindow(
-          title: value['address'],
-        )
-      ),
-    );
+        Marker(
+          markerId: MarkerId(key),
+          position: LatLng(value['x_coord_WGS84'], value['y_coord_WGS84']),
+          infoWindow: InfoWindow(
+            title: value['address'],
+          )
+        ),
+      );
+      if (value.containsKey('weekday_parking_fare')) {
+        _nearest5Carparks.add(PrivateCarpark.fromJson(key, value));
+      }
+      else {
+        _nearest5Carparks.add(PublicCarpark.fromJson(key, value));
+      }
     });
     _setMarker();
   }
