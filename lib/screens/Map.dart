@@ -1,61 +1,15 @@
-// ignore_for_file: prefer_const_constructors
-import 'dart:async';
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_parkwhere/services/AllCarparksService.dart';
-import 'package:flutter_parkwhere/services/PrivateCarparksService.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_parkwhere/services/LocationService.dart';
-import '../models/PrivateCarpark.dart';
-import '../models/PublicCarpark.dart';
-import '../services/PublicCarparksService.dart';
-import 'Sort.dart';
-import 'bottomListSheet.dart';
+import '../controls/SortController.dart';
+import 'package:flutter_parkwhere/controls/MapController.dart';
 
-class MapScreen extends StatefulWidget {
-  @override
-  State<MapScreen> createState() => MapScreenState();
-}
+class MapScreenView extends StatelessWidget {
+  final MapScreenState state;
 
-class MapScreenState extends State<MapScreen> {
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(1.287953, 103.851784),
-    zoom: 14.4746,
-  );
+  MapScreen get widget => state.widget;
 
-  
-  late List<dynamic> _nearest5Carparks = [];
-  late List<double> location = [];
-  List<Marker> _markers = [];
-  late String _mapStyle;
-
-  late GoogleMapController _mapController;
-  Completer<GoogleMapController> _controller = Completer();
-  TextEditingController _searchController = TextEditingController();
-
-  initState() {
-    super.initState();
-    rootBundle.loadString('assets/map_style.txt').then((string) {
-      _mapStyle = string;
-    });
-  }
-
-  _onMapCreated(GoogleMapController controller) {
-    if (mounted) {
-      setState(() {
-        _mapController = controller;
-        controller.setMapStyle(_mapStyle);
-         _controller.complete(controller);
-      });
-    }
-  }
-
-  void _setMarker() {
-    setState(() {
-    });
-  }
+  const MapScreenView(this.state, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -77,10 +31,10 @@ class MapScreenState extends State<MapScreen> {
                 child: GoogleMap(
                   mapToolbarEnabled: false,
                   mapType: MapType.normal,
-                  markers: Set<Marker>.of(_markers),
-                  initialCameraPosition: _kGooglePlex,
+                  markers: Set<Marker>.of(state.markers),
+                  initialCameraPosition: MapScreenState.kGooglePlex,
                   onMapCreated: (GoogleMapController controller) {
-                    _onMapCreated(controller);
+                    state.onMapCreated(controller);
                   },
                 ),
               ),
@@ -101,7 +55,7 @@ class MapScreenState extends State<MapScreen> {
                 children: <Widget> [
                   Expanded(
                     child: TextField(
-                      controller: _searchController,
+                      controller: state.searchController,
                       cursorColor: Colors.black,
                       keyboardType: TextInputType.text,
                       textInputAction: TextInputAction.go,
@@ -114,11 +68,7 @@ class MapScreenState extends State<MapScreen> {
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: IconButton(
-                      onPressed: () async {
-                        var place = await LocationService().getPlace(_searchController.text);
-                        location = await _goToPlace(place);
-                        _getCarparks(location);
-                      }, 
+                      onPressed: () => state.searchAllCarparksNearDestination(),
                       icon: Icon(Icons.search),
                     ),
                   ),
@@ -135,7 +85,7 @@ class MapScreenState extends State<MapScreen> {
               ),
               onPressed: () async {
                 Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                    SortScreen(carparksToSort: _nearest5Carparks, currentLocation: location,)));
+                    SortScreen(carparksToSort: state.nearest5Carparks, currentLocation: state.location,)));
               },
              child: Icon(Icons.all_inbox_sharp),
             ),
@@ -143,55 +93,5 @@ class MapScreenState extends State<MapScreen> {
         ],
       ),),
     );
-  }
-
-  Future<List<double>> _goToPlace(Map<String, dynamic> place) async {
-    final double lat = place['geometry']['location']['lat'];
-    final double lng = place['geometry']['location']['lng'];
-
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(target: LatLng(lat, lng), zoom: 17),
-      ),
-    );
-    _markers.add(
-      Marker(
-        markerId: MarkerId('1'),
-        position: LatLng(lat, lng),
-        infoWindow: InfoWindow(
-          title: 'Destination'
-        )
-      ),
-    );
-    //_setMarker(LatLng(lat, lng));
-    return [lat, lng];
-  }
-
-  Future<void> _getCarparks(List location) async {
-    final double lat = location[0];
-    final double lng = location[1];
-
-    var response = await AllCarparksService().getCarparks(lat, lng);
-    //print(response.length);
-    _nearest5Carparks.clear();
-    response.forEach((key, value){
-      _markers.add(
-        Marker(
-          markerId: MarkerId(key),
-          position: LatLng(value['x_coord_WGS84'], value['y_coord_WGS84']),
-          infoWindow: InfoWindow(
-            title: value['address'],
-          )
-        ),
-      );
-      if (value.containsKey('weekday_parking_fare')) {
-        _nearest5Carparks.add(PrivateCarpark.fromJson(key, value));
-      }
-      else {
-        _nearest5Carparks.add(PublicCarpark.fromJson(key, value));
-      }
-    });
-    _setMarker();
   }
 }

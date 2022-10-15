@@ -1,31 +1,13 @@
 import 'package:flutter/material.dart';
-import '../models/PrivateCarpark.dart';
-import '../models/PublicCarpark.dart';
-import '../services/AllCarparksService.dart';
+import '../controls/SortController.dart';
 import '../services/SortService.dart';
 
-class SortScreen extends StatefulWidget {
+class SortView extends StatelessWidget {
+  final SortState state;
 
-  final List<dynamic> carparksToSort;
-  final List<double> currentLocation;
-  const SortScreen({super.key, required this.carparksToSort, required this.currentLocation});
-  @override
-  State<SortScreen> createState() => _SortState(carparksToSort: carparksToSort, currentLocation: currentLocation);
-}
+  SortScreen get widget => state.widget;
 
-class _SortState extends State<SortScreen> {
-
-  late List<dynamic> carparksToSort;
-  final List<double> currentLocation;
-  late List<dynamic> item = [];
-  _SortState({required this.carparksToSort, required this.currentLocation});
-  TextEditingController editingController = TextEditingController();
-
-  @override
-  initState() {
-    super.initState();
-  }
-  static const TextStyle textStyle = TextStyle(color: Colors.white, fontSize: 20);
+  const SortView(this.state, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,17 +18,17 @@ class _SortState extends State<SortScreen> {
               PopupMenuButton<String>(
                 onSelected: (choice) async {
                   if(choice == 'Sort By: Distance'){
-                    List<dynamic> temp = SortService().sortByDistance(carparksToSort, currentLocation);
-                    setState(() {
-                      item.clear();
-                      item.addAll(temp);
+                    List<dynamic> temp = SortService().sortByDistance(state.carparksToSort, state.currentLocation);
+                    state.setState(() {
+                      state.item.clear();
+                      state.item.addAll(temp);
                     });
                   }
                   if(choice == 'Sort By: Availability'){
-                    List<dynamic> temp = SortService().sortByAvailability(carparksToSort, currentLocation);
-                    setState(() {
-                      item.clear();
-                      item.addAll(temp);
+                    List<dynamic> temp = SortService().sortByAvailability(state.carparksToSort, state.currentLocation);
+                    state.setState(() {
+                      state.item.clear();
+                      state.item.addAll(temp);
                     });
                   }
                 },
@@ -67,9 +49,9 @@ class _SortState extends State<SortScreen> {
             children: [
               TextField(
                 onChanged: (value) async {
-                  filterSearchResults(value.toUpperCase());
+                  state.filterSearchResults(value.toUpperCase());
                 },
-                controller: editingController,
+                controller: state.editingController,
                 decoration: const InputDecoration(
                 labelText: "Search",
                 hintText: "Search",
@@ -79,20 +61,20 @@ class _SortState extends State<SortScreen> {
                 ),
               const SizedBox(height: 20,),
               Expanded(
-                child: item.isNotEmpty ? ListView.builder(
-                  itemCount: item.length,
+                child: state.item.isNotEmpty ? ListView.builder(
+                  itemCount: state.item.length,
                      padding: const EdgeInsets.symmetric(vertical: 16),
                      itemBuilder: (BuildContext context, int index) {
                         return ListTile(
-                          title: Text(item[index].address)
+                          title: Text(state.item[index].address)
                         );
                       }
                 )
                 : ListView.builder(
-                  itemCount: carparksToSort.length,
+                  itemCount: state.carparksToSort.length,
                   itemBuilder: (BuildContext context, int index){
                     return ListTile(
-                      title: Text(carparksToSort[index].address)
+                      title: Text(state.carparksToSort[index].address)
                     );
                   },
                 )
@@ -102,36 +84,4 @@ class _SortState extends State<SortScreen> {
         )
       );
   }
-
-  void filterSearchResults(String query) {
-    List<dynamic> dummySearchList = [];
-    dummySearchList.addAll(carparksToSort);
-
-    if(query.isNotEmpty) {
-      List<dynamic> dummyListData = [];
-      for (var item in dummySearchList) {
-        if(item.address.toString().toUpperCase().contains(query)) {
-          dummyListData.add(item);
-        }
-      }
-      setState(() {
-        item.clear();
-        item.addAll(dummyListData);
-      });
-      return;
-    } else {
-      setState(() {
-        item.clear();
-      });
-    }
-  }
-
-  Widget makeDismissible({required Widget child}) => GestureDetector(
-    behavior: HitTestBehavior.opaque,
-    onTap: () => Navigator.of(context).pop(),
-    child: GestureDetector(onTap: () {}, child: child),
-  );
-
 }
-
-
