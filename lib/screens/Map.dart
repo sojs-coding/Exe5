@@ -10,7 +10,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_parkwhere/services/LocationService.dart';
 import '../models/PublicCarpark.dart';
 import '../services/PublicCarparksService.dart';
-import 'BottomListSheet.dart';
+import 'Sort.dart';
+import 'bottomListSheet.dart';
 
 class MapScreen extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class MapScreenState extends State<MapScreen> {
   );
 
   
-  late List<PublicCarpark> _nearest5Carparks = [];
+  late List<dynamic> _nearest5Carparks = [];
   List<Marker> _nearest5markers = [];
   List<Marker> _markers = [];
   late String _mapStyle;
@@ -115,7 +116,8 @@ class MapScreenState extends State<MapScreen> {
                       onPressed: () async {
                         var place = await LocationService().getPlace(_searchController.text);
                         List location = await _goToPlace(place);
-                        _getPublicCarparks(location);
+                        _nearest5Carparks = location;
+                        _getCarparks(location);
                       }, 
                       icon: Icon(Icons.search),
                     ),
@@ -131,17 +133,10 @@ class MapScreenState extends State<MapScreen> {
               style: ElevatedButton.styleFrom(
                 shape: CircleBorder(),
               ),
-              onPressed: () => showModalBottomSheet(
-                context: context, 
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  )
-                ),
-                builder: (context) => bottomListSheet(nearest5Carparks: _nearest5Carparks),
-              ),
+              onPressed: () async {
+                Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                    SortScreen(carparksToSortLatLng: _nearest5Carparks)));
+              },
              child: Icon(Icons.all_inbox_sharp),
             ),
           ),
@@ -173,13 +168,12 @@ class MapScreenState extends State<MapScreen> {
     return [lat, lng];
   }
 
-  Future<void> _getPublicCarparks(List location) async {
+  Future<void> _getCarparks(List location) async {
     final double lat = location[0];
     final double lng = location[1];
 
-    var response = await PublicCarparksService().getCarparks(lat, lng);
+    var response = await AllCarparksService().getCarparks(lat, lng);
     //print(response.length);
-    _nearest5Carparks.clear();
     response.forEach((key, value){
       _markers.add(
       Marker(
@@ -190,7 +184,6 @@ class MapScreenState extends State<MapScreen> {
         )
       ),
     );
-    _nearest5Carparks.add(PublicCarpark.fromJson(key, value));
     });
     _setMarker();
   }
