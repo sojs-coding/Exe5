@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../controls/CarparkDetailAndFeeController.dart';
 import '../controls/SortController.dart';
 import '../services/SortService.dart';
 
@@ -66,7 +67,11 @@ class SortView extends StatelessWidget {
                      padding: const EdgeInsets.symmetric(vertical: 16),
                      itemBuilder: (BuildContext context, int index) {
                         return ListTile(
-                          title: Text(state.item[index].address)
+                          title: Text(state.item[index].address),
+                          onTap: () async {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                CarparkDetailAndFeeScreen(carparkToShowDetail: state.item[index])));
+                          }
                         );
                       }
                 )
@@ -74,7 +79,11 @@ class SortView extends StatelessWidget {
                   itemCount: state.carparksToSort.length,
                   itemBuilder: (BuildContext context, int index){
                     return ListTile(
-                      title: Text(state.carparksToSort[index].address)
+                      title: Text(state.carparksToSort[index].address),
+                      onTap: () async {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                            CarparkDetailAndFeeScreen(carparkToShowDetail: state.item[index])));
+                      }
                     );
                   },
                 )

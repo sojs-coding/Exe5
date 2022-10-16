@@ -10,6 +10,37 @@ class CarparkDetailAndFeeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Listener(); // Temp Placeholder
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Details")
+        ),
+      body: Column(
+        children: <Widget> [
+          Center(
+            child: Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+              ),
+              child: const SizedBox(
+                width: 300,
+                height: 100,
+                child: Center(
+                  child: Text(
+                    'details here',
+                    style: TextStyle(
+                      fontSize: 15
+                    ),
+                  )
+                ),
+              ),
+            )
+          ),
+        ],
+      )
+    );
   }
 }
