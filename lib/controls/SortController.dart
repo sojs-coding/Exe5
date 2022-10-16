@@ -13,8 +13,6 @@ class SortScreen extends StatefulWidget {
 
 class SortState extends State<SortScreen> {
 
-
-
   late List<dynamic> carparksToSort = widget.carparksToSort;
   late final List<double> currentLocation = widget.currentLocation;
   late List<dynamic> item = [];
