@@ -7,8 +7,6 @@ import 'package:flutter_parkwhere/services/AllCarparksService.dart';
 import 'package:flutter_parkwhere/factories/CarparkFactory.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_parkwhere/services/LocationService.dart';
-import '../models/PublicCarpark.dart';
-import '../models/PrivateCarpark.dart';
 import 'package:flutter_parkwhere/screens/Map.dart';
 
 class MapScreen extends StatefulWidget {

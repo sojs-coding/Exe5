@@ -11,10 +11,6 @@ class PrivateCarparksService extends CarparksService{
     String url = '${this.url}carparks/top/private?x_coord=$x&y_coord=$y&limit=5';
     var response = await http.get(Uri.parse(url));
     var json = convert.jsonDecode(response.body);
-    /*json.forEach((key, value){
-      print('key is $key');
-      print('value is $value ');
-    });*/
     var jsonResult = json as Map<String, dynamic>;
     print(jsonResult);
     return jsonResult;
