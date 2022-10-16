@@ -32,7 +32,7 @@ class PublicCarpark extends Carpark {
 
   num getFee(int durationInMinutes)
   {
-    int halfAndHourCount = (durationInMinutes / 30).floor();
+    int halfAndHourCount = (durationInMinutes / 30).ceil();
     num total = halfAndHourCount * shortTermParkingFare['car'];
     return total;
   }
