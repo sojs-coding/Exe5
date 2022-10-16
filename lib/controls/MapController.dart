@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_parkwhere/models/Carpark.dart';
 import 'package:flutter_parkwhere/services/AllCarparksService.dart';
+import 'package:flutter_parkwhere/services/CarparkFactory.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_parkwhere/services/LocationService.dart';
 import '../models/PublicCarpark.dart';
@@ -55,8 +56,7 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
-  searchAllCarparksNearDestination() async
-  {
+  searchAllCarparksNearDestination() async {
     var place = await LocationService().getPlace(searchController.text);
     location = await _goToPlace(place);
     _getAllCarparks(location);
@@ -93,9 +93,11 @@ class MapScreenState extends State<MapScreen> {
     final double lat = location[0];
     final double lng = location[1];
 
-    var response = await AllCarparksService().getCarparks(lat, lng);
-    //print(response.length);
     nearest5Carparks.clear();
+    var response = await AllCarparksService().getCarparks(lat, lng);
+    CarparkFactory carparkFactory = CarparkFactory();
+
+    //print(response.length);
     response.forEach((key, value){
       markers.add(
         Marker(
@@ -106,13 +108,7 @@ class MapScreenState extends State<MapScreen> {
             )
         ),
       );
-
-      if (value.containsKey('weekday_parking_fare')) {
-        nearest5Carparks.add(PrivateCarpark.fromJson(key, value));
-      }
-      else {
-        nearest5Carparks.add(PublicCarpark.fromJson(key, value));
-      }
+      nearest5Carparks.add(carparkFactory.getCarpark(key, value));
       });
     _setMarker();
   }
