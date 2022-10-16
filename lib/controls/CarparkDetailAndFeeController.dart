@@ -36,17 +36,18 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
         itemCount: header.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-            title: Text('${header[index]} : ${carparkToShowDetail.address}'),
+            title: Text('${header[index]} : ${carparkToShowDetail.getFee(45)}'),
           );
         }
       );
     }
     else{
+      List<String> header = ['ID', 'Address', 'Lng', 'Lat', 'weekdayFare', 'saturdayFare', 'sundayPhParkingFare', 'weekdayEntryFare', 'weekendEntryFare'];
       return ListView.builder(
         itemCount: 1,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-            title: Text(carparkToShowDetail.address),
+            title: Text('${header[index]} : ${carparkToShowDetail.getFee(45)}')
           );
         }
       );
