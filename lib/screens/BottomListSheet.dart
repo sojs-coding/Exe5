@@ -3,17 +3,21 @@ import 'package:flutter/services.dart';
 
 import '../models/PublicCarpark.dart';
 
-class bottomListSheet extends StatefulWidget {
-  const bottomListSheet({super.key, required this.nearest5Carparks});
+//############################################
+// NOT BEING USED!
+//############################################
+
+class BottomListSheet extends StatefulWidget {
+  const BottomListSheet({super.key, required this.nearest5Carparks});
   final List<PublicCarpark> nearest5Carparks;
   @override
-  State<bottomListSheet> createState() => bottomListSheetState(nearest5Carparks: nearest5Carparks);
+  State<BottomListSheet> createState() => BottomListSheetState(nearest5Carparks: nearest5Carparks);
 }
 
-class bottomListSheetState  extends State<bottomListSheet> {
+class BottomListSheetState  extends State<BottomListSheet> {
   TextEditingController editingController = TextEditingController();
   
-  bottomListSheetState({required this.nearest5Carparks});
+  BottomListSheetState({required this.nearest5Carparks});
   late List<PublicCarpark> nearest5Carparks;
   List<PublicCarpark> items = [];
 
