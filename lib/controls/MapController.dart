@@ -77,10 +77,11 @@ class MapScreenState extends State<MapScreen> {
     markers.add(
       Marker(
           markerId: MarkerId('1'),
-          position: LatLng(lat, lng),
+          position: LatLng(lat+0.00008, lng),
           infoWindow: InfoWindow(
               title: 'Destination'
-          )
+          ),
+          icon:BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
       ),
     );
     //_setMarker(LatLng(lat, lng));
