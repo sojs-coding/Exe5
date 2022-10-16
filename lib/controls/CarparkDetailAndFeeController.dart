@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_parkwhere/models/Carpark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parkwhere/models/PrivateCarpark.dart';
 import 'package:flutter_parkwhere/screens/CarparkDetailAndFee.dart';
@@ -30,7 +31,7 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   ListView buildTheCarparkDetails() {
     if (carparkToShowDetail is PrivateCarpark) {
       List<String> header = ['ID', 'Address', 'Lng', 'Lat', 'weekdayFare', 'saturdayFare', 'sundayPhParkingFare', 'weekdayEntryFare', 'weekendEntryFare'];
-      //TODO: Consider using ListBody 
+      //TODO: Consider using ListBody
       return ListView.builder(
         itemCount: header.length,
         itemBuilder: (BuildContext context, int index) {
@@ -50,5 +51,9 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
         }
       );
     }
+  }
+
+  num calculateFee(Carpark carpark, int durationInMinutes) {
+    return carpark.getFee(durationInMinutes);
   }
 }

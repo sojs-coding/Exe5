@@ -17,4 +17,10 @@ class PrivateCarpark extends Carpark {
         weekdayEntryFare = parsedJson['weekday_entry_fare'] ?? 0,
         weekendEntryFare = parsedJson['weekend_entry_fare'] ?? 0,
         super.fromJson(id, parsedJson);
+
+  double getFee(int durationInMinutes)
+  {
+    // Missing Day
+    return weekdayParkingFare;
+  }
 }

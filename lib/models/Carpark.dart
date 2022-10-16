@@ -39,4 +39,6 @@ abstract class Carpark {
   void clearAvailability() {
     _availability.clear();
   }
+
+  num getFee(int durationInMinutes);
 }
