@@ -25,16 +25,11 @@ class CarparkDetailAndFeeView extends StatelessWidget {
                 ),
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
               ),
-              child: const SizedBox(
-                width: 300,
-                height: 100,
+              child: SizedBox(
+                width: 350,
+                height: 200,
                 child: Center(
-                  child: Text(
-                    'details here',
-                    style: TextStyle(
-                      fontSize: 15
-                    ),
-                  )
+                  child: state.buildTheCarparkDetails()
                 ),
               ),
             )

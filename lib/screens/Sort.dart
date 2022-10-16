@@ -82,7 +82,7 @@ class SortView extends StatelessWidget {
                       title: Text(state.carparksToSort[index].address),
                       onTap: () async {
                         Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                            CarparkDetailAndFeeScreen(carparkToShowDetail: state.item[index])));
+                            CarparkDetailAndFeeScreen(carparkToShowDetail: state.carparksToSort[index])));
                       }
                     );
                   },
