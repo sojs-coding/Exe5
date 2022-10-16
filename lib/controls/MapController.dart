@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_parkwhere/models/Carpark.dart';
 import 'package:flutter_parkwhere/services/AllCarparksService.dart';
-import 'package:flutter_parkwhere/services/CarparkFactory.dart';
+import 'package:flutter_parkwhere/factories/CarparkFactory.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_parkwhere/services/LocationService.dart';
 import '../models/PublicCarpark.dart';
