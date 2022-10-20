@@ -54,7 +54,7 @@ class CarparkDetailAndFeeView extends StatelessWidget {
                 width: 200,
                 height: 100,
                 child: Center(
-                  child: state.calculateFee()
+                  child: state.buildFee()
                 ),
               ),
             )

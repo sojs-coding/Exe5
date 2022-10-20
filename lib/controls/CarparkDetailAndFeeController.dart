@@ -27,6 +27,7 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   late var formattedStartDate = formatDate(startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
   late DateTime endDate = DateTime.now();
   late var formattedEndDate = formatDate(endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
+  double price = 0;
 
   List<String> centralCarparkNumbers = ['ACB', 'BBB', 'BRB1', 'CY', 'DUXM', 'HLM', 'KAB', 'KAM', 'KAS', 'PRM', 'SLS', 'SR1', 'SR2',
     'TPM', 'UCS', 'WCB'];
@@ -70,8 +71,9 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
               onConfirm: (startDate) {setState(() {
                 formattedStartDate = formatDate(startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
               });
+                calculateFee(startDate,endDate);
               },
-              currentTime: DateTime.now(), locale: LocaleType.en);
+              currentTime: startDate);
         },
         child: Text(formattedStartDate, style: const TextStyle(color: Colors.blue),)
     );
@@ -92,11 +94,12 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: 18),
                   doneStyle:TextStyle(color: Colors.white, fontSize: 16)),
-              onConfirm: (endDate) {setState(() {
+              onConfirm: (endDate) { setState(() {
                 formattedEndDate = formatDate(endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
               });
+              calculateFee(startDate,endDate);
               },
-              currentTime: DateTime.now(), locale: LocaleType.en);
+              currentTime: endDate);
         },
         child: Text(formattedEndDate, style: const TextStyle(color: Colors.blue),)
     );
@@ -138,21 +141,60 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
     return returnlist;
   }
 
-  Text calculateFee() {
-    double price = 0;
+  Text buildFee() {
+    return Text(
+      "\$${price}",
+      style: const TextStyle(fontSize: 50)
+    );
+  }
+
+  void calculateFee(DateTime start, DateTime end){
+    double temp = 0;
     if(carparkToShowDetail is PublicCarpark){
       if(centralCarparkNumbers.contains(carparkToShowDetail.carparkId)){
-        while(startDate.compareTo(endDate) < 0){
-
+        int interval30minOffPeak = 0;
+        int interval30minPeak = 0;
+        while(start.compareTo(end) < 0){
+          DateTime temp = start.add(const Duration(minutes: 30));
+          if(start.weekday == 7 || (start.hour > 16 || start.hour < 7)){
+            if(temp.weekday == 7 || (temp.hour > 16 || temp.hour < 7)){
+              start = temp;
+            }
+            else{
+              while(temp.weekday == 7 || (temp.hour > 16 || temp.hour < 7)){
+                start = start.add(const Duration(minutes: 1));
+              }
+            }
+            interval30minPeak++;
+          }
+          else{
+            if(!(temp.weekday == 7 || (temp.hour > 16 || temp.hour < 7))){
+              start = temp;
+            }
+            else{
+              while(!(temp.weekday == 7 || (temp.hour > 16 || temp.hour < 7))){
+                start = start.add(const Duration(minutes: 1));
+              }
+            }
+            interval30minOffPeak++;
+          }
         }
+        temp = 1.2 * interval30minPeak + 0.6 * interval30minOffPeak;
+      }
+      else{
+        int interval30min = 0;
+        while(start.compareTo(end) < 0){
+          start = start.add(const Duration(minutes: 30));
+          interval30min++;
+        }
+        temp = 0.6 * interval30min;
       }
     }
     if(carparkToShowDetail is PrivateCarpark){
 
     }
-    return Text(
-      "\$${price}",
-      style: const TextStyle(fontSize: 50)
-    );
+    setState(() {
+      price = double.parse(temp.toStringAsFixed(2));
+    });
   }
 }
