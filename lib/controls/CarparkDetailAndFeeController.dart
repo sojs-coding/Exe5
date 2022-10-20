@@ -28,6 +28,9 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   late DateTime endDate = DateTime.now();
   late var formattedEndDate = formatDate(endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
 
+  List<String> centralCarparkNumbers = ['ACB', 'BBB', 'BRB1', 'CY', 'DUXM', 'HLM', 'KAB', 'KAM', 'KAS', 'PRM', 'SLS', 'SR1', 'SR2',
+    'TPM', 'UCS', 'WCB'];
+
   @override
   Widget build(BuildContext context) => CarparkDetailAndFeeView(this);
 
@@ -138,7 +141,11 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   Text calculateFee() {
     double price = 0;
     if(carparkToShowDetail is PublicCarpark){
-      
+      if(centralCarparkNumbers.contains(carparkToShowDetail.carparkId)){
+        while(startDate.compareTo(endDate) < 0){
+
+        }
+      }
     }
     if(carparkToShowDetail is PrivateCarpark){
 
