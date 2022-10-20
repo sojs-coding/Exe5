@@ -10,7 +10,6 @@ import 'package:flutter_parkwhere/services/LocationService.dart';
 import 'package:flutter_parkwhere/screens/Map.dart';
 
 class MapScreen extends StatefulWidget {
-
   const MapScreen({Key? key}) : super(key: key);
 
   @override
@@ -18,14 +17,18 @@ class MapScreen extends StatefulWidget {
 }
 
 class MapScreenState extends State<MapScreen> {
-
   @override
   Widget build(BuildContext context) => MapScreenView(this);
 
-  static final CameraPosition kGooglePlex = CameraPosition(
+  static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(1.287953, 103.851784),
     zoom: 14.4746,
   );
+
+  static CameraPosition getkGooglePlex() => _kGooglePlex;
+
+  LatLng _cameraLatLng = _kGooglePlex.target;
+  double _cameraZoom = _kGooglePlex.zoom;
 
   late List<Carpark> nearest5Carparks = [];
   late List<double> location = [];
@@ -54,6 +57,34 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
+  onCameraMove(CameraPosition cameraPosition) {
+    _cameraLatLng = cameraPosition.target;
+    _cameraZoom = cameraPosition.zoom;
+  }
+
+
+
+  onCameraIdle() {
+    // Panning
+    if (searchController.text == "") {
+      // If there's no search input and zoom above
+      if (_cameraZoom >= 16) {
+        location = [_cameraLatLng.latitude, _cameraLatLng.longitude];
+        nearest5Carparks.clear();
+        markers.clear();
+        markers.add(
+          Marker(
+              markerId: MarkerId('1'),
+              position: LatLng(location[0] + 0.00008, location[1]),
+              infoWindow: InfoWindow(title: 'Destination'),
+              icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)),
+        );
+        _getAllCarparks(location);
+      }
+    }
+  }
+
   searchAllCarparksNearDestination() async {
     var place = await LocationService().getPlace(searchController.text);
     location = await _goToPlace(place);
@@ -74,15 +105,15 @@ class MapScreenState extends State<MapScreen> {
         CameraPosition(target: LatLng(lat, lng), zoom: 17),
       ),
     );
+    nearest5Carparks.clear();
+    markers.clear();
     markers.add(
       Marker(
           markerId: MarkerId('1'),
-          position: LatLng(lat+0.00008, lng),
-          infoWindow: InfoWindow(
-              title: 'Destination'
-          ),
-          icon:BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
-      ),
+          position: LatLng(lat + 0.00008, lng),
+          infoWindow: InfoWindow(title: 'Destination'),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)),
     );
     //_setMarker(LatLng(lat, lng));
     return [lat, lng];
@@ -92,23 +123,21 @@ class MapScreenState extends State<MapScreen> {
     final double lat = location[0];
     final double lng = location[1];
 
-    nearest5Carparks.clear();
     var response = await AllCarparksService().getCarparks(lat, lng);
     CarparkFactory carparkFactory = CarparkFactory();
 
     //print(response.length);
-    response.forEach((key, value){
+    response.forEach((key, value) {
       markers.add(
         Marker(
             markerId: MarkerId(key),
             position: LatLng(value['x_coord_WGS84'], value['y_coord_WGS84']),
             infoWindow: InfoWindow(
               title: value['address'],
-            )
-        ),
+            )),
       );
       nearest5Carparks.add(carparkFactory.getCarpark(key, value));
-      });
+    });
     _setMarker();
   }
 }

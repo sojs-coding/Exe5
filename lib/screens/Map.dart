@@ -32,9 +32,15 @@ class MapScreenView extends StatelessWidget {
                   mapToolbarEnabled: false,
                   mapType: MapType.normal,
                   markers: Set<Marker>.of(state.markers),
-                  initialCameraPosition: MapScreenState.kGooglePlex,
+                  initialCameraPosition: MapScreenState.getkGooglePlex(),
                   onMapCreated: (GoogleMapController controller) {
                     state.onMapCreated(controller);
+                  },
+                  onCameraIdle: () {
+                    state.onCameraIdle();
+                  },
+                  onCameraMove: (CameraPosition cameraPosition) {
+                    state.onCameraMove(cameraPosition);
                   },
                 ),
               ),
