@@ -41,6 +41,24 @@ class CarparkDetailAndFeeView extends StatelessWidget {
               state.buildEndDate()
             ],
           ),
+          Center(
+            child: Card(
+              elevation: 0,
+              shape: const RoundedRectangleBorder(
+                side: BorderSide(
+                  color: Colors.black,
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+              child: SizedBox(
+                width: 200,
+                height: 100,
+                child: Center(
+                  child: state.calculateFee()
+                ),
+              ),
+            )
+          )
         ],
       )
     );

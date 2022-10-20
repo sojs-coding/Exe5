@@ -135,7 +135,17 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
     return returnlist;
   }
 
-  num calculateFee(Carpark carpark, int durationInMinutes) {
-    return carpark.getFee(durationInMinutes);
+  Text calculateFee() {
+    double price = 0;
+    if(carparkToShowDetail is PublicCarpark){
+      
+    }
+    if(carparkToShowDetail is PrivateCarpark){
+
+    }
+    return Text(
+      "\$${price}",
+      style: const TextStyle(fontSize: 50)
+    );
   }
 }
