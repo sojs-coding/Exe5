@@ -27,10 +27,15 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   late var formattedStartDate = formatDate(startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
   late DateTime endDate = DateTime.now();
   late var formattedEndDate = formatDate(endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
-  double price = 0;
+  String price = "\$0.0";
 
   List<String> centralCarparkNumbers = ['ACB', 'BBB', 'BRB1', 'CY', 'DUXM', 'HLM', 'KAB', 'KAM', 'KAS', 'PRM', 'SLS', 'SR1', 'SR2',
     'TPM', 'UCS', 'WCB'];
+  List<DateTime> publicHoliday = [DateTime(2023,1,1), DateTime(2023,1,22), DateTime(2023,1,23), DateTime(2023,4,7), DateTime(2023,4,22),
+    DateTime(2023,5,1), DateTime(2023,6,2), DateTime(2023,6,29), DateTime(2023,8,9), DateTime(2023,11,23), DateTime(2023,12,25),
+    DateTime(2022,1,1), DateTime(2022,2,1), DateTime(2022,2,2), DateTime(2022,4,15), DateTime(2022,5,1), DateTime(2022,5,2), DateTime(2022,5,3),
+    DateTime(2022,5,15), DateTime(2022,5,16), DateTime(2022,7,10), DateTime(2022,7,11), DateTime(2022,8,9), DateTime(2022,10,24),
+    DateTime(2022,12,25), DateTime(2022,12,26)];
 
   @override
   Widget build(BuildContext context) => CarparkDetailAndFeeView(this);
@@ -143,58 +148,125 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
 
   Text buildFee() {
     return Text(
-      "\$${price}",
+      price,
       style: const TextStyle(fontSize: 50)
     );
   }
 
   void calculateFee(DateTime start, DateTime end){
     double temp = 0;
+    DateTime tempStart = start;
+    DateTime tempEnd = end;
+    String returnString = "";
     if(carparkToShowDetail is PublicCarpark){
-      if(centralCarparkNumbers.contains(carparkToShowDetail.carparkId)){
-        int interval30minOffPeak = 0;
-        int interval30minPeak = 0;
-        while(start.compareTo(end) < 0){
-          DateTime temp = start.add(const Duration(minutes: 30));
-          if(start.weekday == 7 || (start.hour > 16 || start.hour < 7)){
-            if(temp.weekday == 7 || (temp.hour > 16 || temp.hour < 7)){
-              start = temp;
-            }
-            else{
-              while(temp.weekday == 7 || (temp.hour > 16 || temp.hour < 7)){
-                start = start.add(const Duration(minutes: 1));
+      PublicCarpark tempCarpark = carparkToShowDetail as PublicCarpark;
+      if(tempCarpark.nightParking == true || //check if night parking available, if not
+          (((start.hour>=7 && start.hour<=21) || (start.hour==22 && start.minute<=30)) &&
+              ((end.hour>=7 && end.hour<=21) || (end.hour==22 && end.minute<=30)) && end.difference(start).inMinutes < 509)) { //check if start - end within day time
+        if (centralCarparkNumbers.contains(carparkToShowDetail.carparkId)) { //check if carpark is in central area
+          int interval30minOffPeak = 0;
+          int interval30minPeak = 0;
+          int interval30minNight = 0;
+          int numOfCap = 0;
+          while (start.compareTo(end) < 0) {
+            DateTime temp = start.add(const Duration(minutes: 30));
+            if (start.weekday == 7 || (start.hour > 16 || start.hour < 7)) { //current time within peak period
+              if (temp.weekday == 7 || (temp.hour > 16 || temp.hour < 7)) { //current time + 30 within peak period
+                start = temp;
               }
-            }
-            interval30minPeak++;
-          }
-          else{
-            if(!(temp.weekday == 7 || (temp.hour > 16 || temp.hour < 7))){
-              start = temp;
-            }
-            else{
-              while(!(temp.weekday == 7 || (temp.hour > 16 || temp.hour < 7))){
-                start = start.add(const Duration(minutes: 1));
+              else {
+                while (temp.weekday == 7 || (temp.hour > 16 || temp.hour < 7)) { //current time += 1min until out of peak period
+                  start = start.add(const Duration(minutes: 1));
+                }
               }
+              interval30minPeak++;
             }
-            interval30minOffPeak++;
+            else { //current time outside peak period
+              if(start.hour == 23 || start.hour < 7 || (start.hour == 22 && start.minute >= 30)){ //within night parking period
+                interval30minNight++;
+                if(interval30minNight == 9){
+                  numOfCap++;
+                  interval30minOffPeak -= 9;
+                  while(start.hour != 7){
+                    start = start.add(const Duration(minutes: 30));
+                  }
+                }
+              }
+              else{//diff night, reset night interval
+                interval30minNight = 0;
+              }
+              if (!(temp.weekday == 7 || (temp.hour > 16 || temp.hour < 7))) { //current time + 30 outside peak period
+                start = temp;
+              }
+              else {
+                while (!(temp.weekday == 7 || (temp.hour > 16 || temp.hour < 7))) { //current time += 1min until within peak period
+                  start = start.add(const Duration(minutes: 1));
+                }
+              }
+              interval30minOffPeak++;
+            }
           }
+          temp = 1.2 * interval30minPeak + 0.6 * interval30minOffPeak + 5 * numOfCap;
         }
-        temp = 1.2 * interval30minPeak + 0.6 * interval30minOffPeak;
+        else { //if carpark not in central area
+          int interval30minNight = 0;
+          int numOfCap = 0;
+          int interval30min = 0;
+          while (start.compareTo(end) < 0) {
+            if(start.hour == 23 || start.hour < 7 || (start.hour == 22 && start.minute >= 30)){ //within night parking period
+              interval30minNight++;
+              if(interval30minNight == 9){
+                numOfCap++;
+                interval30min -= 9;
+                while(start.hour != 7){
+                  start = start.add(const Duration(minutes: 30));
+                }
+              }
+            }
+            else{//diff night, reset night interval
+              interval30minNight = 0;
+            }
+            start = start.add(const Duration(minutes: 30));
+            interval30min++;
+          }
+          temp = 0.6 * interval30min + 5 * numOfCap;
+        }
       }
       else{
-        int interval30min = 0;
-        while(start.compareTo(end) < 0){
-          start = start.add(const Duration(minutes: 30));
-          interval30min++;
-        }
-        temp = 0.6 * interval30min;
+        returnString = "Night Time Parking Unavailable";
       }
     }
     if(carparkToShowDetail is PrivateCarpark){
-
+      PrivateCarpark tempCarpark = carparkToShowDetail as PrivateCarpark;
+      if(start.weekday < 6){
+        temp += tempCarpark.weekdayEntryFare;
+      }
+      else{
+        temp += tempCarpark.weekendEntryFare;
+      }
+      while(start.compareTo(end) < 0){
+        DateTime tempDate = DateTime(start.year,start.month,start.day);
+        if(start.weekday == 7 || publicHoliday.contains(tempDate)){ //if weekend//public holiday
+          temp += tempCarpark.sundayPhParkingFare;
+        }
+        else if(start.weekday == 6){  //if sat
+          temp += tempCarpark.saturdayParkingFare;
+        }
+        else{ //if weekday
+          temp += tempCarpark.weekdayParkingFare;
+        }
+        start.add(const Duration(minutes: 30));
+      }
     }
     setState(() {
-      price = double.parse(temp.toStringAsFixed(2));
+      if(returnString == "") {
+        price = double.parse(temp.toStringAsFixed(2)).toString();
+      }
+      else{
+        price = returnString;
+      }
+      startDate = tempStart;
+      endDate = tempEnd;
     });
   }
 }
