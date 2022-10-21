@@ -26,7 +26,7 @@ class SortView extends StatelessWidget {
                     });
                   }
                   if(choice == 'Sort By: Availability'){
-                    List<dynamic> temp = SortService().sortByAvailability(state.carparksToSort, state.currentLocation);
+                    List<dynamic> temp = SortService().sortByAvailability(state.carparksToSort);
                     state.setState(() {
                       state.item.clear();
                       state.item.addAll(temp);
