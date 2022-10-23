@@ -33,6 +33,7 @@ class MapScreenState extends State<MapScreen> {
 
   LatLng _cameraLatLng = _kGooglePlex.target;
   double _cameraZoom = _kGooglePlex.zoom;
+  bool searched = false;
 
   late List<Carpark> _nearest5Carparks = [];
 
@@ -114,9 +115,13 @@ class MapScreenState extends State<MapScreen> {
   }
 
   searchAllCarparksNearDestination() async {
-    var place = await LocationService().getPlace(_searchController.text);
-    _location = await _goToPlace(place);
-    _getAllCarparks(_location);
+    if(searched == false) {
+      searched = true;
+      var place = await LocationService().getPlace(_searchController.text);
+      _location = await _goToPlace(place);
+      await _getAllCarparks(_location);
+      searched = false;
+    }
   }
 
   void _setMarker() {

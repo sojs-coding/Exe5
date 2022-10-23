@@ -74,7 +74,7 @@ class MapScreenView extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: IconButton(
-                      onPressed: () => state.searchAllCarparksNearDestination(),
+                      onPressed: () async => await state.searchAllCarparksNearDestination(),
                       icon: Icon(Icons.search),
                     ),
                   ),
