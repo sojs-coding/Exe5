@@ -1,13 +1,14 @@
 import 'dart:ffi';
 import 'dart:math' show cos, sqrt, asin;
 import 'package:flutter_parkwhere/models/Carpark.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../models/PrivateCarpark.dart';
 import '../models/PublicCarpark.dart';
 
 class SortService{
-  List<dynamic> sortByDistance(List<dynamic> carparks, List<dynamic>latLng){
-    List<dynamic> carparkToReturn = [];
+  List<Carpark> sortByDistance(List<Carpark> carparks, LatLng latlng){
+    List<Carpark> carparkToReturn = [];
     double lat1 = 0, lng1 = 0, lat2 = 0, lng2 = 0;
     bool added = false;
     for(var item in carparks){
@@ -32,7 +33,7 @@ class SortService{
             PublicCarpark carpark = carparkToReturn[i] as PublicCarpark;
             lat2 = carpark.yCoordWGS84; lng2 = carpark.xCoordWGS84;
           }
-          if(calculateDistance(latLng[0], latLng[1], lat2, lng2) < calculateDistance(latLng[0], latLng[1],  lat1, lng1)){
+          if(calculateDistance(latlng.longitude, latlng.latitude, lat2, lng2) < calculateDistance(latlng.longitude, latlng.latitude,  lat1, lng1)){
             carparkToReturn.insert(i,item);
             added = true;
             break;
@@ -46,8 +47,7 @@ class SortService{
     return carparkToReturn;
   }
 
-
-  List<Carpark> sortByAvailability(List<dynamic> carparks){
+  List<Carpark> sortByAvailability(List<Carpark> carparks){
     List<Carpark> carparkToReturn = [];
     for(var carpark in carparks){
       int i=0;

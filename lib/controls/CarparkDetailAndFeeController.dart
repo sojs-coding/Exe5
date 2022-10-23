@@ -21,17 +21,17 @@ class CarparkDetailAndFeeScreen extends StatefulWidget {
 
 class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
 
-  late Carpark carparkToShowDetail = widget.carparkToShowDetail;
+  late Carpark _carparkToShowDetail = widget.carparkToShowDetail;
 
-  late DateTime startDate = DateTime.now();
-  late var formattedStartDate = formatDate(startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
-  late DateTime endDate = DateTime.now();
-  late var formattedEndDate = formatDate(endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
-  String price = "\$0.0";
+  late DateTime _startDate = DateTime.now();
+  late var _formattedStartDate = formatDate(_startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
+  late DateTime _endDate = DateTime.now();
+  late var _formattedEndDate = formatDate(_endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
+  String _price = "\$0.0";
 
-  List<String> centralCarparkNumbers = ['ACB', 'BBB', 'BRB1', 'CY', 'DUXM', 'HLM', 'KAB', 'KAM', 'KAS', 'PRM', 'SLS', 'SR1', 'SR2',
+  List<String> _centralCarparkNumbers = ['ACB', 'BBB', 'BRB1', 'CY', 'DUXM', 'HLM', 'KAB', 'KAM', 'KAS', 'PRM', 'SLS', 'SR1', 'SR2',
     'TPM', 'UCS', 'WCB'];
-  List<DateTime> publicHoliday = [DateTime(2023,1,1), DateTime(2023,1,22), DateTime(2023,1,23), DateTime(2023,4,7), DateTime(2023,4,22),
+  List<DateTime> _publicHoliday = [DateTime(2023,1,1), DateTime(2023,1,22), DateTime(2023,1,23), DateTime(2023,4,7), DateTime(2023,4,22),
     DateTime(2023,5,1), DateTime(2023,6,2), DateTime(2023,6,29), DateTime(2023,8,9), DateTime(2023,11,23), DateTime(2023,12,25),
     DateTime(2022,1,1), DateTime(2022,2,1), DateTime(2022,2,2), DateTime(2022,4,15), DateTime(2022,5,1), DateTime(2022,5,2), DateTime(2022,5,3),
     DateTime(2022,5,15), DateTime(2022,5,16), DateTime(2022,7,10), DateTime(2022,7,11), DateTime(2022,8,9), DateTime(2022,10,24),
@@ -46,7 +46,7 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   }
 
   ListView buildTheCarparkDetails() {
-    List<String> list = getAttribute(carparkToShowDetail);
+    List<String> list = getAttribute(_carparkToShowDetail);
     return ListView.builder(
       itemCount: list.length,
       itemBuilder: (BuildContext context, int index) {
@@ -74,13 +74,13 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
                       fontSize: 18),
                   doneStyle:TextStyle(color: Colors.white, fontSize: 16)),
               onConfirm: (startDate) {setState(() {
-                formattedStartDate = formatDate(startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
+                _formattedStartDate = formatDate(startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
               });
-                calculateFee(startDate,endDate);
+                calculateFee(startDate,_endDate);
               },
-              currentTime: startDate);
+              currentTime: _startDate);
         },
-        child: Text(formattedStartDate, style: const TextStyle(color: Colors.blue),)
+        child: Text(_formattedStartDate, style: const TextStyle(color: Colors.blue),)
     );
   }
 
@@ -100,13 +100,13 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
                       fontSize: 18),
                   doneStyle:TextStyle(color: Colors.white, fontSize: 16)),
               onConfirm: (endDate) { setState(() {
-                formattedEndDate = formatDate(endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
+                _formattedEndDate = formatDate(endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
               });
-              calculateFee(startDate,endDate);
+              calculateFee(_startDate,endDate);
               },
-              currentTime: endDate);
+              currentTime: _endDate);
         },
-        child: Text(formattedEndDate, style: const TextStyle(color: Colors.blue),)
+        child: Text(_formattedEndDate, style: const TextStyle(color: Colors.blue),)
     );
   }
 
@@ -148,7 +148,7 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
 
   Text buildFee() {
     return Text(
-      price,
+      _price,
       style: const TextStyle(fontSize: 50)
     );
   }
@@ -158,12 +158,12 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
     DateTime tempStart = start;
     DateTime tempEnd = end;
     String returnString = "";
-    if(carparkToShowDetail is PublicCarpark){
-      PublicCarpark tempCarpark = carparkToShowDetail as PublicCarpark;
+    if(_carparkToShowDetail is PublicCarpark){
+      PublicCarpark tempCarpark = _carparkToShowDetail as PublicCarpark;
       if(tempCarpark.nightParking == true || //check if night parking available, if not
           (((start.hour>=7 && start.hour<=21) || (start.hour==22 && start.minute<=30)) &&
               ((end.hour>=7 && end.hour<=21) || (end.hour==22 && end.minute<=30)) && end.difference(start).inMinutes < 509)) { //check if start - end within day time
-        if (centralCarparkNumbers.contains(carparkToShowDetail.carparkId)) { //check if carpark is in central area
+        if (_centralCarparkNumbers.contains(_carparkToShowDetail.carparkId)) { //check if carpark is in central area
           int interval30minOffPeak = 0;
           int interval30minPeak = 0;
           int interval30minNight = 0;
@@ -236,8 +236,8 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
         returnString = "Night Time Parking Unavailable";
       }
     }
-    if(carparkToShowDetail is PrivateCarpark){
-      PrivateCarpark tempCarpark = carparkToShowDetail as PrivateCarpark;
+    if(_carparkToShowDetail is PrivateCarpark){
+      PrivateCarpark tempCarpark = _carparkToShowDetail as PrivateCarpark;
       if(start.weekday < 6){
         temp += tempCarpark.weekdayEntryFare;
       }
@@ -246,7 +246,7 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
       }
       while(start.compareTo(end) < 0){
         DateTime tempDate = DateTime(start.year,start.month,start.day);
-        if(start.weekday == 7 || publicHoliday.contains(tempDate)){ //if weekend//public holiday
+        if(start.weekday == 7 || _publicHoliday.contains(tempDate)){ //if weekend//public holiday
           temp += tempCarpark.sundayPhParkingFare;
         }
         else if(start.weekday == 6){  //if sat
@@ -260,13 +260,13 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
     }
     setState(() {
       if(returnString == "") {
-        price = double.parse(temp.toStringAsFixed(2)).toString();
+        _price = double.parse(temp.toStringAsFixed(2)).toString();
       }
       else{
-        price = returnString;
+        _price = returnString;
       }
-      startDate = tempStart;
-      endDate = tempEnd;
+      _startDate = tempStart;
+      _endDate = tempEnd;
     });
   }
 }

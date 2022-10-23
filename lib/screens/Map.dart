@@ -31,7 +31,7 @@ class MapScreenView extends StatelessWidget {
                 child: GoogleMap(
                   mapToolbarEnabled: false,
                   mapType: MapType.normal,
-                  markers: Set<Marker>.of(state.markers),
+                  markers: Set<Marker>.of(state.getMarkers()),
                   initialCameraPosition: MapScreenState.getkGooglePlex(),
                   onMapCreated: (GoogleMapController controller) {
                     state.onMapCreated(controller);
@@ -61,7 +61,7 @@ class MapScreenView extends StatelessWidget {
                 children: <Widget> [
                   Expanded(
                     child: TextField(
-                      controller: state.searchController,
+                      controller: state.getSearchController(),
                       cursorColor: Colors.black,
                       keyboardType: TextInputType.text,
                       textInputAction: TextInputAction.go,
@@ -91,7 +91,7 @@ class MapScreenView extends StatelessWidget {
               ),
               onPressed: () async {
                 Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                    SortScreen(carparksToSort: state.nearest5Carparks, currentLocation: state.location,)));
+                    SortScreen(carparksToSort: state.getNearest5Carparks(), currentLocation: state.getLocation(),)));
               },
              child: Icon(Icons.all_inbox_sharp),
             ),
