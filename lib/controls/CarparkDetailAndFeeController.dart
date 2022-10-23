@@ -238,11 +238,13 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
     }
     if(_carparkToShowDetail is PrivateCarpark){
       PrivateCarpark tempCarpark = _carparkToShowDetail as PrivateCarpark;
-      if(start.weekday < 6){
-        temp += tempCarpark.weekdayEntryFare;
-      }
-      else{
-        temp += tempCarpark.weekendEntryFare;
+      if(start.compareTo(end) < 0) {
+        if (start.weekday < 6) {
+          temp += tempCarpark.weekdayEntryFare;
+        }
+        else {
+          temp += tempCarpark.weekendEntryFare;
+        }
       }
       while(start.compareTo(end) < 0){
         DateTime tempDate = DateTime(start.year,start.month,start.day);
@@ -255,7 +257,7 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
         else{ //if weekday
           temp += tempCarpark.weekdayParkingFare;
         }
-        start.add(const Duration(minutes: 30));
+        start = start.add(const Duration(minutes: 30));
       }
     }
     setState(() {
