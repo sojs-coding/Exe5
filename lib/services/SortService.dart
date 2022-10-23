@@ -3,9 +3,6 @@ import 'dart:math' show cos, sqrt, asin;
 import 'package:flutter_parkwhere/models/Carpark.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../models/PrivateCarpark.dart';
-import '../models/PublicCarpark.dart';
-
 class SortService{
   List<Carpark> sortByDistance(List<Carpark> carparks, LatLng latlng){
     List<Carpark> carparkToReturn = [];
@@ -16,24 +13,10 @@ class SortService{
       if(carparkToReturn.isEmpty){
         carparkToReturn.add(item);
       } else{
-        if (item is PrivateCarpark) {
-          PrivateCarpark carpark = item;
-          lat1 = carpark.yCoordWGS84; lng2 = carpark.xCoordWGS84;
-        }
-        else {
-          PublicCarpark carpark = item as PublicCarpark;
-          lng1 = carpark.yCoordWGS84; lng2 = carpark.xCoordWGS84;
-        }
+        lat1 = item.yCoordWGS84; lng1 = item.xCoordWGS84;
         for(int i=0; i<carparkToReturn.length; i++){
-          if (carparkToReturn[i] is PrivateCarpark) {
-            PrivateCarpark carpark = carparkToReturn[i] as PrivateCarpark;
-            lat2 = carpark.yCoordWGS84; lng2 = carpark.xCoordWGS84;
-          }
-          else {
-            PublicCarpark carpark = carparkToReturn[i] as PublicCarpark;
-            lat2 = carpark.yCoordWGS84; lng2 = carpark.xCoordWGS84;
-          }
-          if(calculateDistance(latlng.longitude, latlng.latitude, lat2, lng2) < calculateDistance(latlng.longitude, latlng.latitude,  lat1, lng1)){
+          lat2 = carparkToReturn[i].yCoordWGS84; lng2 = carparkToReturn[i].xCoordWGS84;
+          if(calculateDistance(latlng.longitude, latlng.latitude, lat2, lng2) > calculateDistance(latlng.longitude, latlng.latitude,  lat1, lng1)){
             carparkToReturn.insert(i,item);
             added = true;
             break;
@@ -54,12 +37,10 @@ class SortService{
       int currentAvailability = 0;
       int listElementAvailability = 0;
       for(; i<carparkToReturn.length; i++){
-        if(carpark is Carpark){
-          currentAvailability = carpark.getLatestAvailability()?.availableLots ?? 0;
-          listElementAvailability = carparkToReturn[i].getLatestAvailability()?.availableLots ?? 0;
-          if(currentAvailability > listElementAvailability){
-            break;
-          }
+        currentAvailability = carpark.getLatestAvailability()?.availableLots ?? 0;
+        listElementAvailability = carparkToReturn[i].getLatestAvailability()?.availableLots ?? 0;
+        if(currentAvailability >= listElementAvailability){
+          break;
         }
       }
       carparkToReturn.insert(i, carpark);
