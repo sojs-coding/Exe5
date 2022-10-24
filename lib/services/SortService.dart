@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:math' show cos, sqrt, asin;
 import 'package:flutter_parkwhere/models/Carpark.dart';
+import 'package:flutter_parkwhere/models/PrivateCarpark.dart';
 import 'package:flutter_parkwhere/models/PublicCarpark.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -37,6 +38,7 @@ class SortService {
 
   List<Carpark> sortByAvailability(List<Carpark> carparks) {
     List<Carpark> carparkToReturn = [];
+    List<Carpark> privateCarpark = [];
     for (var carpark in carparks) {
       int i = 0;
       int currentAvailability = 0;
@@ -46,18 +48,21 @@ class SortService {
           currentAvailability =
               carpark.getLatestAvailability()?.availableLots ?? 0;
           if (carparkToReturn[i] is PublicCarpark) {
-            listElementAvailability = (carparkToReturn[i] as PublicCarpark)
-                    .getLatestAvailability()
-                    ?.availableLots ??
-                0;
-            if (currentAvailability >= listElementAvailability) {
+            listElementAvailability = (carparkToReturn[i] as PublicCarpark).getLatestAvailability()?.availableLots ?? 0;
+            if (currentAvailability <= listElementAvailability) {
               break;
             }
           }
         }
       }
-      carparkToReturn.insert(i, carpark);
+      if(carpark is PublicCarpark) {
+        carparkToReturn.insert(i, carpark);
+      }
+      if(carpark is PrivateCarpark){
+        privateCarpark.add(carpark);
+      }
     }
+    carparkToReturn.addAll(privateCarpark);
     return carparkToReturn;
   }
 
