@@ -6,16 +6,17 @@ import 'package:flutter_parkwhere/models/PublicCarpark.dart';
 class CarparkFactory {
   Carpark getCarpark(String key, dynamic carparkJson) {
     Carpark carpark;
-    Availability availability;
     if (carparkJson.containsKey('weekday_parking_fare')) {
       carpark = PrivateCarpark.fromJson(key, carparkJson);
     }
     else {
+      Availability availability;
       carpark = PublicCarpark.fromJson(key, carparkJson);
-    }
-    availability = Availability.fromJson(key, carparkJson);
-    if (availability.availableLots != null) {
-      carpark.addAvailability(availability);
+      Map<String, dynamic> availabilityJson = (carparkJson['availability'] as Map<String, dynamic>);
+      availabilityJson.forEach((timestamp, value) {
+        availability = Availability.fromJson(timestamp, value);
+        (carpark as PublicCarpark).addAvailability(availability);
+      });
     }
     return carpark;
   }

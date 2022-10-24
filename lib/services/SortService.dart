@@ -54,11 +54,13 @@ class SortService{
       int currentAvailability = 0;
       int listElementAvailability = 0;
       for(; i<carparkToReturn.length; i++){
-        if(carpark is Carpark){
+        if(carpark is PublicCarpark){
           currentAvailability = carpark.getLatestAvailability()?.availableLots ?? 0;
-          listElementAvailability = carparkToReturn[i].getLatestAvailability()?.availableLots ?? 0;
-          if(currentAvailability > listElementAvailability){
-            break;
+          if (carparkToReturn[i] is PublicCarpark) {
+            listElementAvailability = (carparkToReturn[i] as PublicCarpark).getLatestAvailability()?.availableLots ?? 0;
+            if(currentAvailability > listElementAvailability){
+              break;
+            }
           }
         }
       }
