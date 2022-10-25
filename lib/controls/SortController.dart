@@ -76,14 +76,14 @@ class SortState extends State<SortScreen> {
 
   void sortBy(String choice) {
     if(choice == 'Sort By: Distance'){
-      List<Carpark> temp = SortService().sortByDistance(getCarparksToSort(), getCurrentLocation());
+      List<Carpark> temp = SortService().sortByDistance(_carparksToSort, _currentLocation);
       setState(() {
         _carparkDisplayList.clear();
         _carparkDisplayList.addAll(temp);
       });
     }
     if(choice == 'Sort By: Availability'){
-      List<Carpark> temp = SortService().sortByAvailability(getCarparksToSort());
+      List<Carpark> temp = SortService().sortByAvailability(_carparksToSort);
       setState(() {
         _carparkDisplayList.clear();
         _carparkDisplayList.addAll(temp);
