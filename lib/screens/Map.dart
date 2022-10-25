@@ -36,7 +36,7 @@ class MapScreenView extends StatelessWidget {
                   onMapCreated: (GoogleMapController controller) {
                     state.onMapCreated(controller);
                   },
-                  onCameraIdle: () {
+                  onCameraIdle: () async {
                     state.onCameraIdle();
                   },
                   onCameraMove: (CameraPosition cameraPosition) {
