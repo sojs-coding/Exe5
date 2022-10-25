@@ -35,6 +35,7 @@ class MapScreenState extends State<MapScreen> {
   double _cameraZoom = _kGooglePlex.zoom;
   bool _searched = false;
   bool _markerPressed = false;
+  bool _searchingForCarparks = false;
 
   late List<Carpark> _nearest5Carparks = [];
 
@@ -99,10 +100,15 @@ class MapScreenState extends State<MapScreen> {
       return;
     }
 
+    if (_searchingForCarparks) {
+      return;
+    }
+
     // Panning
     if (_searchController.text == "") {
       // If there's no search input and zoom above
       if (_cameraZoom >= 16) {
+        _searchingForCarparks = true;
         _location = LatLng(_cameraLatLng.latitude, _cameraLatLng.longitude);
 
         _nearest5Carparks.clear();
@@ -120,13 +126,19 @@ class MapScreenState extends State<MapScreen> {
               _getDestinationMarker(_location)
           );
         });
+        _searchingForCarparks = false;
       }
     }
   }
 
   searchAllCarparksNearDestination() async {
+    if (_searchingForCarparks) {
+      return;
+    }
+
     if(_searched == false) {
       _searched = true;
+      _searchingForCarparks = true;
       var place = await LocationService().getPlace(_searchController.text);
       _location = await _getCoordinateOfPlace(place);
 
@@ -145,7 +157,8 @@ class MapScreenState extends State<MapScreen> {
         );
       });
       await _panToCoordinate(_location);
-        _searched = false;
+      _searched = false;
+      _searchingForCarparks = false;
     }
   }
 
