@@ -12,7 +12,10 @@ class CarparkDetailAndFeeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Details")
+        title: const Text("Details"),
+        actions: <Widget>[
+          state.buildVehicleType()
+        ]
         ),
       body: Column(
         children: <Widget> [
