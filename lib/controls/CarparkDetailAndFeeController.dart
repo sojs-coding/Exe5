@@ -21,7 +21,7 @@ class CarparkDetailAndFeeScreen extends StatefulWidget {
 
 class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
 
-  late Carpark _carparkToShowDetail = widget.carparkToShowDetail;
+  late final Carpark _carparkToShowDetail = widget.carparkToShowDetail;
 
   late DateTime _endDate = DateTime.now();
   late var _formattedStartDate = formatDate(_startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
@@ -29,9 +29,9 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   late var _formattedEndDate = formatDate(_endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
   String _price = "\$0.0";
 
-  List<String> _centralCarparkNumbers = ['ACB', 'BBB', 'BRB1', 'CY', 'DUXM', 'HLM', 'KAB', 'KAM', 'KAS', 'PRM', 'SLS', 'SR1', 'SR2',
+  final List<String> _centralCarparkNumbers = ['ACB', 'BBB', 'BRB1', 'CY', 'DUXM', 'HLM', 'KAB', 'KAM', 'KAS', 'PRM', 'SLS', 'SR1', 'SR2',
     'TPM', 'UCS', 'WCB'];
-  List<DateTime> _publicHoliday = [DateTime(2023,1,1), DateTime(2023,1,22), DateTime(2023,1,23), DateTime(2023,4,7), DateTime(2023,4,22),
+  final List<DateTime> _publicHoliday = [DateTime(2023,1,1), DateTime(2023,1,22), DateTime(2023,1,23), DateTime(2023,4,7), DateTime(2023,4,22),
     DateTime(2023,5,1), DateTime(2023,6,2), DateTime(2023,6,29), DateTime(2023,8,9), DateTime(2023,11,23), DateTime(2023,12,25),
     DateTime(2022,1,1), DateTime(2022,2,1), DateTime(2022,2,2), DateTime(2022,4,15), DateTime(2022,5,1), DateTime(2022,5,2), DateTime(2022,5,3),
     DateTime(2022,5,15), DateTime(2022,5,16), DateTime(2022,7,10), DateTime(2022,7,11), DateTime(2022,8,9), DateTime(2022,10,24),
@@ -182,7 +182,7 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
 
   void calculateFee(DateTime start, DateTime end) {
     if(_carparkToShowDetail is PrivateCarpark){
-      calculateFee(start, end);
+      calculateFeePrivate(start, end);
     }
     else {
       if (_vehicleSelected == 'Car') {
