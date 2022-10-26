@@ -12,56 +12,28 @@ class CarparkDetailAndFeeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Details"),
-        actions: <Widget>[
-          state.buildVehicleType()
-        ]
+        title: const Text("Details")
         ),
       body: Column(
         children: <Widget> [
           Center(
             child: Card(
               elevation: 0,
-              shape: const RoundedRectangleBorder(
+              shape: RoundedRectangleBorder(
                 side: BorderSide(
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
-                borderRadius: BorderRadius.all(Radius.circular(12)),
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
               ),
               child: SizedBox(
                 width: 350,
-                height: 300,
+                height: 200,
                 child: Center(
                   child: state.buildTheCarparkDetails()
                 ),
               ),
             )
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget> [
-              state.buildStartDate(),
-              state.buildEndDate()
-            ],
-          ),
-          Center(
-            child: Card(
-              elevation: 0,
-              shape: const RoundedRectangleBorder(
-                side: BorderSide(
-                  color: Colors.black,
-                ),
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-              ),
-              child: SizedBox(
-                width: 200,
-                height: 100,
-                child: Center(
-                  child: state.buildFee()
-                ),
-              ),
-            )
-          )
         ],
       )
     );

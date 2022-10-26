@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_parkwhere/models/Carpark.dart';
 import 'package:flutter_parkwhere/screens/Sort.dart';
-import 'package:flutter_parkwhere/services/SortService.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class SortScreen extends StatefulWidget {
 
-  final List<Carpark> carparksToSort;
-  final LatLng currentLocation;
+  final List<dynamic> carparksToSort;
+  final List<double> currentLocation;
 
   const SortScreen({Key? key, required this.carparksToSort, required this.currentLocation}) : super(key: key);
   @override
@@ -16,27 +13,14 @@ class SortScreen extends StatefulWidget {
 
 class SortState extends State<SortScreen> {
 
-  late final List<Carpark> _carparksToSort = [...widget.carparksToSort];
-
-  getCarparksToSort() {
-    return _carparksToSort;
-  }
-
-  late LatLng _currentLocation = widget.currentLocation;
-
-  getCurrentLocation() {
-    return _currentLocation;
-  }
-
-  late final List<Carpark> _carparkDisplayList = [];
-
-  List<Carpark> getCarparkDisplayList() {
-    return _carparkDisplayList;
-  }
+  late List<dynamic> carparksToSort = widget.carparksToSort;
+  late final List<double> currentLocation = widget.currentLocation;
+  late List<dynamic> item = [];
 
   @override
   Widget build(BuildContext context) => SortView(this);
 
+  //_SortState({required this.carparksToSort, required this.currentLocation});
   TextEditingController editingController = TextEditingController();
 
   @override
@@ -51,42 +35,25 @@ class SortState extends State<SortScreen> {
   );
 
   void filterSearchResults(String query) {
-    List<Carpark> dummySearchList = [];
-    dummySearchList.addAll(_carparksToSort);
+    List<dynamic> dummySearchList = [];
+    dummySearchList.addAll(carparksToSort);
 
     if(query.isNotEmpty) {
-      List<Carpark> dummyListData = [];
-      for (Carpark item in dummySearchList) {
+      List<dynamic> dummyListData = [];
+      for (var item in dummySearchList) {
         if(item.address.toString().toUpperCase().contains(query)) {
           dummyListData.add(item);
         }
       }
       setState(() {
-        _carparkDisplayList.clear();
-        _carparkDisplayList.addAll(dummyListData);
+        item.clear();
+        item.addAll(dummyListData);
       });
       return;
     } else {
       setState(() {
-        _carparkDisplayList.clear();
+        item.clear();
       });
     }
-  }
-
-  void sortBy(String choice) {
-    List<Carpark> temp;
-    if(choice == 'Sort By: Distance'){
-      temp = SortService().sortByDistance(_carparksToSort, _currentLocation);
-    }
-    else if(choice == 'Sort By: Availability'){
-      temp = SortService().sortByAvailability(_carparksToSort);
-    }
-    else {
-      temp = [];
-    }
-    setState(() {
-      _carparkDisplayList.clear();
-      _carparkDisplayList.addAll(temp);
-    });
   }
 }

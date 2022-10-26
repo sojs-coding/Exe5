@@ -1,8 +1,6 @@
 // ignore: file_names
 import 'dart:ffi';
 
-import 'package:flutter_parkwhere/models/Availability.dart';
-
 import 'Carpark.dart';
 
 class PublicCarpark extends Carpark {
@@ -17,9 +15,6 @@ class PublicCarpark extends Carpark {
   late final int carparkDeckNumber;
   late final double gantryHeight;
   late final bool carparkBasement;
-  late final int totalLots;
-
-  final List<Availability> availabilityList = [];
 
   PublicCarpark();
 
@@ -33,7 +28,6 @@ class PublicCarpark extends Carpark {
         carparkDeckNumber = parsedJson['carpark_deck_number'],
         gantryHeight = parsedJson['gantry_height'],
         carparkBasement = parsedJson['carpark_basement'],
-        totalLots = parsedJson['total_lots'],
         super.fromJson(id, parsedJson);
 
   num getFee(int durationInMinutes)
@@ -41,28 +35,5 @@ class PublicCarpark extends Carpark {
     int halfAndHourCount = (durationInMinutes / 30).ceil();
     num total = halfAndHourCount * shortTermParkingFare['car'];
     return total;
-  }
-
-  void addAvailability(Availability availability) {
-    availabilityList.insert(0, availability);
-  }
-
-  // Prevents carpark _availability list from being modified
-  List<Availability> getAvailability() {
-    return [...availabilityList];
-  }
-
-  // Returns the latest availability
-  Availability? getLatestAvailability() {
-    try {
-      return availabilityList.first;
-    }
-    catch (e) {
-      return null;
-    }
-  }
-
-  void clearAvailability() {
-    availabilityList.clear();
   }
 }

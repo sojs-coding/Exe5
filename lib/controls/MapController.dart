@@ -10,66 +10,31 @@ import 'package:flutter_parkwhere/services/LocationService.dart';
 import 'package:flutter_parkwhere/screens/Map.dart';
 
 class MapScreen extends StatefulWidget {
+
   const MapScreen({Key? key}) : super(key: key);
 
   @override
   State<MapScreen> createState() => MapScreenState();
 }
 
-class MarkerPlaceholder {
-
-}
-
 class MapScreenState extends State<MapScreen> {
+
   @override
   Widget build(BuildContext context) => MapScreenView(this);
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
+  static final CameraPosition kGooglePlex = CameraPosition(
     target: LatLng(1.287953, 103.851784),
     zoom: 14.4746,
   );
 
-  static CameraPosition getkGooglePlex() => _kGooglePlex;
-
-  LatLng _cameraLatLng = _kGooglePlex.target;
-  double _cameraZoom = _kGooglePlex.zoom;
-  bool _searched = false;
-  bool _markerPressed = false;
-  bool _searchingForCarparks = false;
-
-  late List<Carpark> _nearest5Carparks = [];
-
-  List<Carpark> getNearest5Carparks() {
-    return _nearest5Carparks;
-  }
-
-  LatLng _location = LatLng(1.287953, 103.851784);
-
-  void setLocation(double latitude, double longitude) {
-    if (latitude >= -85 && latitude <= 85.05115 && longitude >= -180 && longitude <= 180) {
-      _location = LatLng(latitude, longitude);
-    }
-  }
-
-  LatLng getLocation() {
-    return _location;
-  }
-
-  final List<Marker> _markers = [];
-
-  List<Marker> getMarkers() {
-    return _markers;
-  }
-
+  late List<Carpark> nearest5Carparks = [];
+  late List<double> location = [];
+  List<Marker> markers = [];
   late String _mapStyle;
 
   late GoogleMapController _mapController;
-  final Completer<GoogleMapController> _controller = Completer();
-  final TextEditingController _searchController = TextEditingController();
-
-  getSearchController() {
-    return _searchController;
-  }
+  Completer<GoogleMapController> _controller = Completer();
+  TextEditingController searchController = TextEditingController();
 
   @override
   initState() {
@@ -89,137 +54,61 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
-  onCameraMove(CameraPosition cameraPosition) {
-    _cameraLatLng = cameraPosition.target;
-    _cameraZoom = cameraPosition.zoom;
-  }
-
-  onCameraIdle() async {
-    if (_markerPressed) {
-      _markerPressed = false;
-      return;
-    }
-
-    if (_searchingForCarparks) {
-      return;
-    }
-
-    // Panning
-    if (_searchController.text == "") {
-      // If there's no search input and zoom above
-      if (_cameraZoom >= 16) {
-        _searchingForCarparks = true;
-        _location = LatLng(_cameraLatLng.latitude, _cameraLatLng.longitude);
-
-        _nearest5Carparks.clear();
-        _markers.clear();
-
-        _nearest5Carparks = await _getAllCarparks(_location);
-        for (Carpark carpark in _nearest5Carparks) {
-          Marker marker = _getCarparkMarker(carpark);
-          _markers.add(
-              _getPanningCarparkMarker(carpark)
-          );
-        }
-        setState(() {
-          _markers.add(
-              _getDestinationMarker(_location)
-          );
-        });
-        _searchingForCarparks = false;
-      }
-    }
-  }
-
   searchAllCarparksNearDestination() async {
-    if (_searchingForCarparks) {
-      return;
-    }
-
-    if(_searched == false) {
-      _searched = true;
-      _searchingForCarparks = true;
-      var place = await LocationService().getPlace(_searchController.text);
-      _location = await _getCoordinateOfPlace(place);
-
-      _nearest5Carparks.clear();
-      _markers.clear();
-
-      _nearest5Carparks = await _getAllCarparks(_location);
-      for (Carpark carpark in _nearest5Carparks) {
-        _markers.add(
-          _getCarparkMarker(carpark)
-        );
-      }
-      setState(() {
-        _markers.add(
-            _getDestinationMarker(_location)
-        );
-      });
-      await _panToCoordinate(_location);
-      _searched = false;
-      _searchingForCarparks = false;
-    }
+    var place = await LocationService().getPlace(searchController.text);
+    location = await _goToPlace(place);
+    _getAllCarparks(location);
   }
 
-  Future<LatLng> _getCoordinateOfPlace(Map<String, dynamic> place) async {
-    return LatLng(place['geometry']['location']['lat'], place['geometry']['location']['lng']);
+  void _setMarker() {
+    setState(() {});
   }
 
-  Future<void> _panToCoordinate(LatLng latlng) async {
+  Future<List<double>> _goToPlace(Map<String, dynamic> place) async {
+    final double lat = place['geometry']['location']['lat'];
+    final double lng = place['geometry']['location']['lng'];
+
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(
       CameraUpdate.newCameraPosition(
-        CameraPosition(target: latlng, zoom: 17),
+        CameraPosition(target: LatLng(lat, lng), zoom: 17),
       ),
     );
+    markers.add(
+      Marker(
+          markerId: MarkerId('1'),
+          position: LatLng(lat+0.00008, lng),
+          infoWindow: InfoWindow(
+              title: 'Destination'
+          ),
+          icon:BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue)
+      ),
+    );
+    //_setMarker(LatLng(lat, lng));
+    return [lat, lng];
   }
 
-  Future<List<Carpark>> _getAllCarparks(LatLng location) async {
-    final double lat = location.latitude;
-    final double lng = location.longitude;
+  Future<void> _getAllCarparks(List location) async {
+    final double lat = location[0];
+    final double lng = location[1];
 
-    var response = await AllCarparksService().getCarparks(lat, lng, 5);
+    nearest5Carparks.clear();
+    var response = await AllCarparksService().getCarparks(lat, lng);
     CarparkFactory carparkFactory = CarparkFactory();
 
-    List<Carpark> listOfCarparks = [];
-
     //print(response.length);
-    response.forEach((key, value) {
-      listOfCarparks.add(carparkFactory.getCarpark(key, value));
-    });
-    return listOfCarparks;
-  }
-
-  Marker _getDestinationMarker(LatLng latlng) {
-    Marker marker = Marker(
-      markerId: MarkerId('1'),
-      position: LatLng(latlng.latitude + 0.00008, latlng.longitude),
-      infoWindow: InfoWindow(title: 'Destination'),
-      icon:
-      BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-    );
-    return marker;
-  }
-
-  Marker _getCarparkMarker(Carpark carpark) {
-    return Marker(
-      markerId: MarkerId(carpark.carparkId),
-      position: LatLng(carpark.xCoordWGS84, carpark.yCoordWGS84),
-      infoWindow: InfoWindow(
-        title: carpark.address,
-      ),
-    );
-  }
-
-  Marker _getPanningCarparkMarker(Carpark carpark) {
-    return Marker(
-      markerId: MarkerId(carpark.carparkId),
-      position: LatLng(carpark.xCoordWGS84, carpark.yCoordWGS84),
-      infoWindow: InfoWindow(
-        title: carpark.address,
-      ),
-      onTap: () {_markerPressed = true;}
-    );
+    response.forEach((key, value){
+      markers.add(
+        Marker(
+            markerId: MarkerId(key),
+            position: LatLng(value['x_coord_WGS84'], value['y_coord_WGS84']),
+            infoWindow: InfoWindow(
+              title: value['address'],
+            )
+        ),
+      );
+      nearest5Carparks.add(carparkFactory.getCarpark(key, value));
+      });
+    _setMarker();
   }
 }

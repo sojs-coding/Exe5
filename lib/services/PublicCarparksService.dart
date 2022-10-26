@@ -12,8 +12,8 @@ class PublicCarparksService extends CarparksService{
   }*/
 
   @override
-  Future<Map<String, dynamic>> getCarparks(double x, double y, int carparkCount) async {
-    String url = '${this.url}carparks/top/public?x_coord=$x&y_coord=$y&limit=$carparkCount';
+  Future<Map<String, dynamic>> getCarparks(double x, double y) async {
+    String url = '${this.url}carparks/top/public?x_coord=$x&y_coord=$y&limit=5';
     return CarparksService.requestJson(url);
   }
 }

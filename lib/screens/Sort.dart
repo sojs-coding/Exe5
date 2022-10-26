@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_parkwhere/models/Carpark.dart';
 import '../controls/CarparkDetailAndFeeController.dart';
 import '../controls/SortController.dart';
 import '../services/SortService.dart';
@@ -19,7 +18,20 @@ class SortView extends StatelessWidget {
             actions: <Widget>[
               PopupMenuButton<String>(
                 onSelected: (choice) async {
-                  state.sortBy(choice);
+                  if(choice == 'Sort By: Distance'){
+                    List<dynamic> temp = SortService().sortByDistance(state.carparksToSort, state.currentLocation);
+                    state.setState(() {
+                      state.item.clear();
+                      state.item.addAll(temp);
+                    });
+                  }
+                  if(choice == 'Sort By: Availability'){
+                    List<dynamic> temp = SortService().sortByAvailability(state.carparksToSort, state.currentLocation);
+                    state.setState(() {
+                      state.item.clear();
+                      state.item.addAll(temp);
+                    });
+                  }
                 },
                 itemBuilder: (BuildContext context) {
                   return {'Sort By: Distance', 'Sort By: Availability'}.map((String choice) {
@@ -50,27 +62,27 @@ class SortView extends StatelessWidget {
                 ),
               const SizedBox(height: 20,),
               Expanded(
-                child: state.getCarparkDisplayList().isNotEmpty ? ListView.builder(
-                  itemCount: state.getCarparkDisplayList().length,
+                child: state.item.isNotEmpty ? ListView.builder(
+                  itemCount: state.item.length,
                      padding: const EdgeInsets.symmetric(vertical: 16),
                      itemBuilder: (BuildContext context, int index) {
                         return ListTile(
-                          title: Text(state.getCarparkDisplayList()[index].address),
+                          title: Text(state.item[index].address),
                           onTap: () async {
                             Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                CarparkDetailAndFeeScreen(carparkToShowDetail: state.getCarparkDisplayList()[index])));
+                                CarparkDetailAndFeeScreen(carparkToShowDetail: state.item[index])));
                           }
                         );
                       }
                 )
                 : ListView.builder(
-                  itemCount: state.getCarparksToSort().length,
+                  itemCount: state.carparksToSort.length,
                   itemBuilder: (BuildContext context, int index){
                     return ListTile(
-                      title: Text(state.getCarparksToSort()[index].address),
+                      title: Text(state.carparksToSort[index].address),
                       onTap: () async {
                         Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                            CarparkDetailAndFeeScreen(carparkToShowDetail: state.getCarparksToSort()[index])));
+                            CarparkDetailAndFeeScreen(carparkToShowDetail: state.carparksToSort[index])));
                       }
                     );
                   },
