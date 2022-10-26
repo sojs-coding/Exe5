@@ -17,7 +17,7 @@ class PublicCarpark extends Carpark {
   late final int carparkDeckNumber;
   late final double gantryHeight;
   late final bool carparkBasement;
-  late final int totalLots;
+  late final int? totalLots;
 
   final List<Availability> availabilityList = [];
 

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -21,83 +23,119 @@ class MapScreenView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        resizeToAvoidBottomInset : false,
+        resizeToAvoidBottomInset: false,
         appBar: null,
         body: Stack(
-        children: <Widget> [
-          Row(
-            children: [
-              Expanded(
-                child: GoogleMap(
-                  mapToolbarEnabled: false,
-                  mapType: MapType.normal,
-                  markers: Set<Marker>.of(state.getMarkers()),
-                  initialCameraPosition: MapScreenState.getkGooglePlex(),
-                  onMapCreated: (GoogleMapController controller) {
-                    state.onMapCreated(controller);
-                  },
-                  onCameraIdle: () async {
-                    state.onCameraIdle();
-                  },
-                  onCameraMove: (CameraPosition cameraPosition) {
-                    state.onCameraMove(cameraPosition);
-                  },
+          children: <Widget>[
+            Row(
+              children: [
+                Expanded(
+                  child: GoogleMap(
+                    mapToolbarEnabled: false,
+                    mapType: MapType.normal,
+                    markers: Set<Marker>.of(state.getMarkers()),
+                    initialCameraPosition: MapScreenState.getkGooglePlex(),
+                    onMapCreated: (GoogleMapController controller) {
+                      state.onMapCreated(controller);
+                    },
+                    onCameraIdle: () async {
+                      state.onCameraIdle();
+                    },
+                    onCameraMove: (CameraPosition cameraPosition) {
+                      state.onCameraMove(cameraPosition);
+                    },
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              //Search Bar
+              top: 40,
+              right: 15,
+              left: 15,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        controller: state.getSearchController(),
+                        cursorColor: Colors.black,
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.go,
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 15),
+                            hintText: (state.selectedSearchOption[0]) ? "Search by Destination..." : "Search by Carpark ID...",
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: IconButton(
+                        onPressed: () 
+                          async =>  (state.selectedSearchOption[0]) ? await state.searchAllCarparksNearDestination() : await state.searchCarparkID(context),
+                        icon: const Icon(Icons.search),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-          Positioned(
-            top: 40 ,
-            right: 15,
-            left: 15,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(20)
+            ),
+            Positioned(
+              //Search Option
+              top: 100,
+              left: 15,
+              child: Container(
+                  height: 40.0,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    
+                  ),
+                  child: ToggleButtons(
+                    direction: state.vertical ? Axis.vertical : Axis.horizontal,
+                    onPressed: (int index) {
+                      state.searchOptionSelection(index);
+                    },
+                    borderRadius: const BorderRadius.all(Radius.circular(20)),
+                    selectedBorderColor: Colors.white,
+                    selectedColor: Colors.white,
+                    fillColor: Colors.blue,
+                    color: Colors.blue,
+                    constraints:
+                        const BoxConstraints(minHeight: 40.0, minWidth: 100.0),
+                    isSelected: state.selectedSearchOption,
+                    children: state.searchOption,
+                  )),
+            ),
+            Positioned(
+              //Sort button
+              top: 100,
+              right: 5,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const CircleBorder(),
                 ),
-              ),
-              child: Row(
-                children: <Widget> [
-                  Expanded(
-                    child: TextField(
-                      controller: state.getSearchController(),
-                      cursorColor: Colors.black,
-                      keyboardType: TextInputType.text,
-                      textInputAction: TextInputAction.go,
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                          hintText: "Search..."),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: IconButton(
-                      onPressed: () async => await state.searchAllCarparksNearDestination(),
-                      icon: Icon(Icons.search),
-                    ),
-                  ),
-                ],
+                onPressed: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SortScreen(
+                                carparksToSort: state.getNearest5Carparks(),
+                                currentLocation: state.getLocation(),
+                              )));
+                },
+                child: const Icon(Icons.all_inbox_sharp),
               ),
             ),
-          ),
-          Positioned(
-            top: 105,
-            right: 5,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: CircleBorder(),
-              ),
-              onPressed: () async {
-                Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                    SortScreen(carparksToSort: state.getNearest5Carparks(), currentLocation: state.getLocation(),)));
-              },
-             child: Icon(Icons.all_inbox_sharp),
-            ),
-          ),
-        ],
-      ),),
+          ],
+        ),
+      ),
     );
   }
 }

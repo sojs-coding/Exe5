@@ -8,6 +8,7 @@ import 'package:flutter_parkwhere/factories/CarparkFactory.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_parkwhere/services/LocationService.dart';
 import 'package:flutter_parkwhere/screens/Map.dart';
+import '../services/SearchCarparkId.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -38,6 +39,11 @@ class MapScreenState extends State<MapScreen> {
   bool _searchingForCarparks = false;
 
   late List<Carpark> _nearest5Carparks = [];
+
+  //Search by Carpark ID
+  final List<Widget> searchOption = <Widget>[Text('Destination'), Text('Carpark ID')];
+  List<bool> selectedSearchOption = <bool>[true, false];
+  bool vertical = false;
 
   List<Carpark> getNearest5Carparks() {
     return _nearest5Carparks;
@@ -162,6 +168,61 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
+  searchCarparkID(BuildContext context) async {
+    if (_searchingForCarparks) {
+      return;
+    }
+
+    if(_searched == false) {
+      _searched = true;
+      _searchingForCarparks = true;
+      
+      _markers.clear();
+      _nearest5Carparks.clear();
+
+      _nearest5Carparks = await _searchByCarparkID(_searchController.text.toUpperCase());
+      if(_nearest5Carparks.isNotEmpty) {
+        for (Carpark carpark in _nearest5Carparks) {
+          _location = LatLng(carpark.xCoordWGS84, carpark.yCoordWGS84);
+          setState(() {
+            _markers.add(
+              _getCarparkMarker(carpark)
+            );
+        });
+        }
+        await _panToCoordinate(_location);
+        _searched = false;
+        _searchingForCarparks = false;
+      }
+      else {
+        setState(() {});
+        _searched = false;
+        _searchingForCarparks = false;
+        return showDialog<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Invalid Carpark ID'),
+              content: const Text('No carpark with that ID\n'
+                                  'exist.'),
+              actions: <Widget>[
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
+  }
+
   Future<LatLng> _getCoordinateOfPlace(Map<String, dynamic> place) async {
     return LatLng(place['geometry']['location']['lat'], place['geometry']['location']['lng']);
   }
@@ -221,5 +282,26 @@ class MapScreenState extends State<MapScreen> {
       ),
       onTap: () {_markerPressed = true;}
     );
+  }
+
+  void searchOptionSelection(int index) {
+    setState(() {
+      for (int i = 0; i < selectedSearchOption.length; i++) {
+        selectedSearchOption[i] = i == index;
+      }
+    });
+  }
+
+  Future<List<Carpark>> _searchByCarparkID(String carparkID) async {
+    var response = await SearchCarparkID().getCarpark(carparkID);
+    CarparkFactory carparkFactory = CarparkFactory();
+
+    List<Carpark> listOfCarparks = [];
+
+    //print(response.length);
+    response.forEach((key, value) {
+      listOfCarparks.add(carparkFactory.getCarpark(key, value));
+    });
+    return listOfCarparks;
   }
 }
