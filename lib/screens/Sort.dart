@@ -50,27 +50,27 @@ class SortView extends StatelessWidget {
                 ),
               const SizedBox(height: 20,),
               Expanded(
-                child: state.getCarparkDisplayList().isNotEmpty ? ListView.builder(
-                  itemCount: state.getCarparkDisplayList().length,
+                child: state.carparkDisplayList.isNotEmpty ? ListView.builder(
+                  itemCount: state.carparkDisplayList.length,
                      padding: const EdgeInsets.symmetric(vertical: 16),
                      itemBuilder: (BuildContext context, int index) {
                         return ListTile(
-                          title: Text(state.getCarparkDisplayList()[index].address),
+                          title: Text(state.carparkDisplayList[index].address),
                           onTap: () async {
                             Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                CarparkDetailAndFeeScreen(carparkToShowDetail: state.getCarparkDisplayList()[index])));
+                                CarparkDetailAndFeeScreen(carparkToShowDetail: state.carparkDisplayList[index])));
                           }
                         );
                       }
                 )
                 : ListView.builder(
-                  itemCount: state.getCarparksToSort().length,
+                  itemCount: state.carparksToSort.length,
                   itemBuilder: (BuildContext context, int index){
                     return ListTile(
-                      title: Text(state.getCarparksToSort()[index].address),
+                      title: Text(state.carparksToSort[index].address),
                       onTap: () async {
                         Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                            CarparkDetailAndFeeScreen(carparkToShowDetail: state.getCarparksToSort()[index])));
+                            CarparkDetailAndFeeScreen(carparkToShowDetail: state.carparksToSort[index])));
                       }
                     );
                   },

@@ -16,28 +16,16 @@ class SortScreen extends StatefulWidget {
 
 class SortState extends State<SortScreen> {
 
-  late final List<Carpark> _carparksToSort = [...widget.carparksToSort];
+  late final List<Carpark> carparksToSort = [...widget.carparksToSort];
 
-  getCarparksToSort() {
-    return _carparksToSort;
-  }
+  late final LatLng currentLocation = widget.currentLocation;
 
-  late LatLng _currentLocation = widget.currentLocation;
-
-  getCurrentLocation() {
-    return _currentLocation;
-  }
-
-  late final List<Carpark> _carparkDisplayList = [];
-
-  List<Carpark> getCarparkDisplayList() {
-    return _carparkDisplayList;
-  }
+  late final List<Carpark> carparkDisplayList = [];
 
   @override
   Widget build(BuildContext context) => SortView(this);
 
-  TextEditingController editingController = TextEditingController();
+  final TextEditingController editingController = TextEditingController();
 
   @override
   initState() {
@@ -52,7 +40,7 @@ class SortState extends State<SortScreen> {
 
   void filterSearchResults(String query) {
     List<Carpark> dummySearchList = [];
-    dummySearchList.addAll(_carparksToSort);
+    dummySearchList.addAll(carparksToSort);
 
     if(query.isNotEmpty) {
       List<Carpark> dummyListData = [];
@@ -62,13 +50,13 @@ class SortState extends State<SortScreen> {
         }
       }
       setState(() {
-        _carparkDisplayList.clear();
-        _carparkDisplayList.addAll(dummyListData);
+        carparkDisplayList.clear();
+        carparkDisplayList.addAll(dummyListData);
       });
       return;
     } else {
       setState(() {
-        _carparkDisplayList.clear();
+        carparkDisplayList.clear();
       });
     }
   }
@@ -76,17 +64,17 @@ class SortState extends State<SortScreen> {
   void sortBy(String choice) {
     List<Carpark> temp;
     if(choice == 'Sort By: Distance'){
-      temp = SortService().sortByDistance(_carparksToSort, _currentLocation);
+      temp = SortService().sortByDistance(carparksToSort, currentLocation);
     }
     else if(choice == 'Sort By: Availability'){
-      temp = SortService().sortByAvailability(_carparksToSort);
+      temp = SortService().sortByAvailability(carparksToSort);
     }
     else {
       temp = [];
     }
     setState(() {
-      _carparkDisplayList.clear();
-      _carparkDisplayList.addAll(temp);
+      carparkDisplayList.clear();
+      carparkDisplayList.addAll(temp);
     });
   }
 }

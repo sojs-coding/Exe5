@@ -33,8 +33,8 @@ class MapScreenView extends StatelessWidget {
                   child: GoogleMap(
                     mapToolbarEnabled: false,
                     mapType: MapType.normal,
-                    markers: Set<Marker>.of(state.getMarkers()),
-                    initialCameraPosition: MapScreenState.getkGooglePlex(),
+                    markers: Set<Marker>.of(state.markers),
+                    initialCameraPosition: MapScreenState.kGooglePlex,
                     onMapCreated: (GoogleMapController controller) {
                       state.onMapCreated(controller);
                     },
@@ -62,7 +62,7 @@ class MapScreenView extends StatelessWidget {
                   children: <Widget>[
                     Expanded(
                       child: TextField(
-                        controller: state.getSearchController(),
+                        controller: state.searchController,
                         cursorColor: Colors.black,
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.go,
@@ -78,7 +78,7 @@ class MapScreenView extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 8.0),
                       child: IconButton(
                         onPressed: () 
-                          async =>  (state.selectedSearchOption[0]) ? await state.searchAllCarparksNearDestination() : await state.searchCarparkID(context),
+                          async =>  (state.selectedSearchOption[0]) ? await state.searchAllCarparksNearDestination() : await state.searchCarparkID(),
                         icon: const Icon(Icons.search),
                       ),
                     ),
@@ -126,8 +126,8 @@ class MapScreenView extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => SortScreen(
-                                carparksToSort: state.getNearest5Carparks(),
-                                currentLocation: state.getLocation(),
+                                carparksToSort: state.nearest5Carparks,
+                                currentLocation: state.location,
                               )));
                 },
                 child: const Icon(Icons.all_inbox_sharp),

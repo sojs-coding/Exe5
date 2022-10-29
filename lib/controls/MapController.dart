@@ -17,65 +17,38 @@ class MapScreen extends StatefulWidget {
   State<MapScreen> createState() => MapScreenState();
 }
 
-class MarkerPlaceholder {
-
-}
-
 class MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) => MapScreenView(this);
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
+  static final CameraPosition kGooglePlex = CameraPosition(
     target: LatLng(1.287953, 103.851784),
     zoom: 14.4746,
   );
 
-  static CameraPosition getkGooglePlex() => _kGooglePlex;
-
-  LatLng _cameraLatLng = _kGooglePlex.target;
-  double _cameraZoom = _kGooglePlex.zoom;
+  LatLng _cameraLatLng = kGooglePlex.target;
+  double _cameraZoom = kGooglePlex.zoom;
   bool _searched = false;
   bool _markerPressed = false;
   bool _searchingForCarparks = false;
 
-  late List<Carpark> _nearest5Carparks = [];
+  late final List<Carpark> nearest5Carparks = [];
 
-  //Search by Carpark ID
   final List<Widget> searchOption = <Widget>[Text('Destination'), Text('Carpark ID')];
-  List<bool> selectedSearchOption = <bool>[true, false];
-  bool vertical = false;
 
-  List<Carpark> getNearest5Carparks() {
-    return _nearest5Carparks;
-  }
+  final List<bool> selectedSearchOption = <bool>[true, false];
 
-  LatLng _location = LatLng(1.287953, 103.851784);
+  final bool vertical = false;
 
-  void setLocation(double latitude, double longitude) {
-    if (latitude >= -85 && latitude <= 85.05115 && longitude >= -180 && longitude <= 180) {
-      _location = LatLng(latitude, longitude);
-    }
-  }
+  LatLng location = LatLng(1.287953, 103.851784);
 
-  LatLng getLocation() {
-    return _location;
-  }
-
-  final List<Marker> _markers = [];
-
-  List<Marker> getMarkers() {
-    return _markers;
-  }
+  final List<Marker> markers = [];
 
   late String _mapStyle;
 
   late GoogleMapController _mapController;
   final Completer<GoogleMapController> _controller = Completer();
-  final TextEditingController _searchController = TextEditingController();
-
-  getSearchController() {
-    return _searchController;
-  }
+  final TextEditingController searchController = TextEditingController();
 
   @override
   initState() {
@@ -111,25 +84,25 @@ class MapScreenState extends State<MapScreen> {
     }
 
     // Panning
-    if (_searchController.text == "") {
+    if (searchController.text == "") {
       // If there's no search input and zoom above
       if (_cameraZoom >= 16) {
         _searchingForCarparks = true;
-        _location = LatLng(_cameraLatLng.latitude, _cameraLatLng.longitude);
+        location = LatLng(_cameraLatLng.latitude, _cameraLatLng.longitude);
 
-        _nearest5Carparks.clear();
-        _markers.clear();
+        nearest5Carparks.clear();
+        markers.clear();
 
-        _nearest5Carparks = await _getAllCarparks(_location);
-        for (Carpark carpark in _nearest5Carparks) {
+        nearest5Carparks.addAll(await _getAllCarparks(location));
+        for (Carpark carpark in nearest5Carparks) {
           Marker marker = _getCarparkMarker(carpark);
-          _markers.add(
+          markers.add(
               _getPanningCarparkMarker(carpark)
           );
         }
         setState(() {
-          _markers.add(
-              _getDestinationMarker(_location)
+          markers.add(
+              _getDestinationMarker(location)
           );
         });
         _searchingForCarparks = false;
@@ -145,30 +118,30 @@ class MapScreenState extends State<MapScreen> {
     if(_searched == false) {
       _searched = true;
       _searchingForCarparks = true;
-      var place = await LocationService().getPlace(_searchController.text);
-      _location = await _getCoordinateOfPlace(place);
+      var place = await LocationService().getPlace(searchController.text);
+      location = await _getCoordinateOfPlace(place);
 
-      _nearest5Carparks.clear();
-      _markers.clear();
+      nearest5Carparks.clear();
+      markers.clear();
 
-      _nearest5Carparks = await _getAllCarparks(_location);
-      for (Carpark carpark in _nearest5Carparks) {
-        _markers.add(
+      nearest5Carparks.addAll(await _getAllCarparks(location));
+      for (Carpark carpark in nearest5Carparks) {
+        markers.add(
           _getCarparkMarker(carpark)
         );
       }
       setState(() {
-        _markers.add(
-            _getDestinationMarker(_location)
+        markers.add(
+            _getDestinationMarker(location)
         );
       });
-      await _panToCoordinate(_location);
+      await _panToCoordinate(location);
       _searched = false;
       _searchingForCarparks = false;
     }
   }
 
-  searchCarparkID(BuildContext context) async {
+  searchCarparkID() async {
     if (_searchingForCarparks) {
       return;
     }
@@ -177,25 +150,24 @@ class MapScreenState extends State<MapScreen> {
       _searched = true;
       _searchingForCarparks = true;
       
-      _markers.clear();
-      _nearest5Carparks.clear();
+      markers.clear();
+      nearest5Carparks.clear();
 
-      _nearest5Carparks = await _searchByCarparkID(_searchController.text.toUpperCase());
-      if(_nearest5Carparks.isNotEmpty) {
-        for (Carpark carpark in _nearest5Carparks) {
-          _location = LatLng(carpark.xCoordWGS84, carpark.yCoordWGS84);
+      nearest5Carparks.addAll(await _searchByCarparkID(searchController.text.toUpperCase()));
+      if(nearest5Carparks.isNotEmpty) {
+        for (Carpark carpark in nearest5Carparks) {
+          location = LatLng(carpark.xCoordWGS84, carpark.yCoordWGS84);
           setState(() {
-            _markers.add(
+            markers.add(
               _getCarparkMarker(carpark)
             );
         });
         }
-        await _panToCoordinate(_location);
+        await _panToCoordinate(location);
         _searched = false;
         _searchingForCarparks = false;
       }
       else {
-        setState(() {});
         _searched = false;
         _searchingForCarparks = false;
         return showDialog<void>(
@@ -249,6 +221,7 @@ class MapScreenState extends State<MapScreen> {
     response.forEach((key, value) {
       listOfCarparks.add(carparkFactory.getCarpark(key, value));
     });
+
     return listOfCarparks;
   }
 
