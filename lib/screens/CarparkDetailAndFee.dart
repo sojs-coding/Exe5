@@ -48,7 +48,16 @@ class CarparkDetailAndFeeView extends StatelessWidget {
                 width: 350,
                 height: 300,
                 child: Center(
-                  child: state.buildTheCarparkDetails()
+                  child:
+                    ListView.builder(
+                      itemCount: state.carparkDetails.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ListTile(
+                          visualDensity: const VisualDensity(vertical: -3),
+                          title: Text("${state.carparkDetails.keys.elementAt(index)} : ${state.carparkDetails.values.elementAt(index)}"),
+                        );
+                      }
+                    )
                 ),
               ),
             )
@@ -85,7 +94,11 @@ class CarparkDetailAndFeeView extends StatelessWidget {
                 width: 200,
                 height: 100,
                 child: Center(
-                  child: state.buildFee()
+                  child:
+                  Text(
+                    "\$${state.price}SGD",
+                    style: const TextStyle(fontSize: 50)
+                  )
                 ),
               ),
             )

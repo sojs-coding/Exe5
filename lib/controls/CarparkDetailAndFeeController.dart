@@ -22,19 +22,22 @@ class CarparkDetailAndFeeScreen extends StatefulWidget {
 class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
 
   late final Carpark _carparkToShowDetail = widget.carparkToShowDetail;
+  late final Map<String, dynamic> _carparkDetails = _carparkToShowDetail.toMap();
+  Map<String, dynamic> get carparkDetails => _carparkDetails;
 
   late DateTime _endDate = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,DateTime.now().hour,DateTime.now().minute);
   late DateTime _startDate = _endDate;
   late String _formattedStartDate = formatDate(_startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
   late String _formattedEndDate = formatDate(_endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
-
   String get formattedStartDate => _formattedStartDate;
   String get formattedEndDate => _formattedEndDate;
 
   String _price = "\$0.0";
+  String get price => _price;
 
   final List<String> _centralCarparkNumbers = ['ACB', 'BBB', 'BRB1', 'CY', 'DUXM', 'HLM', 'KAB', 'KAM', 'KAS', 'PRM', 'SLS', 'SR1', 'SR2',
     'TPM', 'UCS', 'WCB'];
+
   final List<DateTime> _publicHoliday = [DateTime(2023,1,1), DateTime(2023,1,22), DateTime(2023,1,23), DateTime(2023,4,7), DateTime(2023,4,22),
     DateTime(2023,5,1), DateTime(2023,6,2), DateTime(2023,6,29), DateTime(2023,8,9), DateTime(2023,11,23), DateTime(2023,12,25),
     DateTime(2022,1,1), DateTime(2022,2,1), DateTime(2022,2,2), DateTime(2022,4,15), DateTime(2022,5,1), DateTime(2022,5,2), DateTime(2022,5,3),
@@ -57,20 +60,6 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   @override
   initState() {
     super.initState();
-  }
-
-  ListView buildTheCarparkDetails() {
-    //List<String> list = getAttribute(_carparkToShowDetail);
-    Map<String, dynamic> list = _carparkToShowDetail.toMap();
-    return ListView.builder(
-      itemCount: list.length,
-      itemBuilder: (BuildContext context, int index) {
-        return ListTile(
-          visualDensity: const VisualDensity(vertical: -3),
-          title: Text("${list.keys.elementAt(index)} : ${list.values.elementAt(index)}"),
-        );
-      }
-    );
   }
 
   void buildStartDate(){
@@ -113,49 +102,6 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
         calculateFee();
         },
         currentTime: _endDate);
-  }
-
-  List<String> getAttribute(Carpark carpark){
-    List<String> returnlist = [];
-    returnlist.add("ID: ${carpark.carparkId}");
-    returnlist.add("Address: ${carpark.address}");
-    returnlist.add("Lng: ${carpark.xCoordWGS84}");
-    returnlist.add("Lat: ${carpark.yCoordWGS84}");
-    if(carpark is PrivateCarpark){
-      if(carpark.weekdayParkingFare != 0) {
-        returnlist.add("Weekday Fare: ${carpark.weekdayParkingFare}");
-      }
-      if(carpark.saturdayParkingFare != 0) {
-        returnlist.add("Saturday Fare: ${carpark.saturdayParkingFare}");
-      }
-      if(carpark.sundayPhParkingFare != 0) {
-        returnlist.add("Sunday/PH Fare: ${carpark.sundayPhParkingFare}");
-      }
-      if(carpark.weekdayEntryFare != 0) {
-        returnlist.add("Weekday Entry Fee: ${carpark.weekdayEntryFare}");
-      }
-      if(carpark.weekendEntryFare != 0) {
-        returnlist.add("Weekend Entry Fee: ${carpark.weekendEntryFare}");
-      }
-    }
-    if(carpark is PublicCarpark){
-      returnlist.add("Carpark Type: ${carpark.carparkType}");
-      returnlist.add("Electronic Parking: ${carpark.electronicParkingSystem}");
-      returnlist.add("Short Term Parking: ${carpark.shortTermParking}");
-      returnlist.add("Free Parking: ${carpark.freeParking}");
-      returnlist.add("Night Parking: ${carpark.nightParking}");
-      returnlist.add("Carpark Deck Number: ${carpark.carparkDeckNumber}");
-      returnlist.add("Gantry Height: ${carpark.gantryHeight}");
-      returnlist.add("Carpark Basement: ${carpark.carparkBasement}");
-    }
-    return returnlist;
-  }
-
-  Text buildFee() {
-    return Text(
-        "\$${_price}SGD",
-      style: const TextStyle(fontSize: 50)
-    );
   }
 
   void calculateFee() {
