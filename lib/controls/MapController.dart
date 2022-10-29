@@ -8,7 +8,8 @@ import 'package:flutter_parkwhere/factories/CarparkFactory.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_parkwhere/services/LocationService.dart';
 import 'package:flutter_parkwhere/screens/Map.dart';
-import '../services/SearchCarparkId.dart';
+
+import '../services/PublicCarparksService.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -266,7 +267,7 @@ class MapScreenState extends State<MapScreen> {
   }
 
   Future<List<Carpark>> _searchByCarparkID(String carparkID) async {
-    var response = await SearchCarparkID().getCarpark(carparkID);
+    var response = await PublicCarparksService().getCarpark(carparkID);
     CarparkFactory carparkFactory = CarparkFactory();
 
     List<Carpark> listOfCarparks = [];
