@@ -1,3 +1,7 @@
+import 'package:flutter_parkwhere/controls/CalculateBikePublicFee.dart';
+import 'package:flutter_parkwhere/controls/CalculateCarPublicFee.dart';
+import 'package:flutter_parkwhere/controls/CalculateHeavyPublicFee.dart';
+import 'package:flutter_parkwhere/controls/CalculatePrivateFee.dart';
 import 'package:flutter_parkwhere/models/Carpark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parkwhere/models/PrivateCarpark.dart';
