@@ -17,7 +17,7 @@ class CarparkDetailAndFeeView extends StatelessWidget {
           PopupMenuButton<String>(
               onSelected: (choice) async {
                 state.vehicleSelected = choice;
-                state.calculateFee();
+                state.setCalculator();
               },
               itemBuilder: (BuildContext context) {
                 return state.vehicleChoice.map<PopupMenuEntry<String>>((ch){
