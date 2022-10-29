@@ -60,13 +60,14 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   }
 
   ListView buildTheCarparkDetails() {
-    List<String> list = getAttribute(_carparkToShowDetail);
+    //List<String> list = getAttribute(_carparkToShowDetail);
+    Map<String, dynamic> list = _carparkToShowDetail.toMap();
     return ListView.builder(
       itemCount: list.length,
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
           visualDensity: const VisualDensity(vertical: -3),
-          title: Text(list[index]),
+          title: Text("${list.keys.elementAt(index)} : ${list.values.elementAt(index)}"),
         );
       }
     );

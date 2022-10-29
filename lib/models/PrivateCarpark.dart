@@ -1,7 +1,8 @@
 // ignore: file_names
+import 'package:flutter_parkwhere/interfaces/IsMappable.dart';
 import 'Carpark.dart';
 
-class PrivateCarpark extends Carpark {
+class PrivateCarpark extends Carpark implements IsMappable{
   late final double weekdayParkingFare;
   late final double saturdayParkingFare;
   late final double sundayPhParkingFare;
@@ -17,4 +18,18 @@ class PrivateCarpark extends Carpark {
         weekdayEntryFare = parsedJson['weekday_entry_fare'] ?? 0,
         weekendEntryFare = parsedJson['weekend_entry_fare'] ?? 0,
         super.fromJson(id, parsedJson);
+
+  @override
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    map.addAll(super.toMap());
+    map.addAll({
+      "weekdayParkingFare" : weekdayParkingFare,
+      "saturdayParkingFare" : saturdayParkingFare,
+      "sundayPhParkingFare" : sundayPhParkingFare,
+      "weekdayEntryFare" : weekdayEntryFare,
+      "weekendEntryFare" : weekendEntryFare
+    });
+    return map;
+  }
 }

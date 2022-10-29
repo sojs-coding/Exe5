@@ -1,11 +1,12 @@
 // ignore: file_names
 import 'dart:ffi';
 
+import 'package:flutter_parkwhere/interfaces/IsMappable.dart';
 import 'package:flutter_parkwhere/models/Availability.dart';
 
 import 'Carpark.dart';
 
-class PublicCarpark extends Carpark {
+class PublicCarpark extends Carpark implements IsMappable {
   late final String carparkType;
   late final bool electronicParkingSystem;
   late final String shortTermParking;
@@ -57,5 +58,24 @@ class PublicCarpark extends Carpark {
 
   void clearAvailability() {
     availabilityList.clear();
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    map.addAll(super.toMap());
+    map.addAll({
+      "carparkType" : carparkType,
+      "electronicParkingSystem" : electronicParkingSystem,
+      "shortTermParking" : shortTermParking,
+      "shortTermParkingFare" : shortTermParkingFare,
+      "freeParking" : freeParking,
+      "nightParking" : nightParking,
+      "carparkDeckNumber" : carparkDeckNumber,
+      "gantryHeight" : gantryHeight,
+      "carparkBasement" : carparkBasement,
+      "totalLots" : totalLots
+    });
+    return map;
   }
 }
