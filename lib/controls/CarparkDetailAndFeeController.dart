@@ -24,9 +24,13 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   late final Carpark _carparkToShowDetail = widget.carparkToShowDetail;
 
   late DateTime _endDate = DateTime.now();
-  late var _formattedStartDate = formatDate(_startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
+  late String _formattedStartDate = formatDate(_startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
   late DateTime _startDate = DateTime.now();
-  late var _formattedEndDate = formatDate(_endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
+  late String _formattedEndDate = formatDate(_endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
+
+  String get formattedStartDate => _formattedStartDate;
+  String get formattedEndDate => _formattedEndDate;
+
   String _price = "\$0.0";
 
   final List<String> _centralCarparkNumbers = ['ACB', 'BBB', 'BRB1', 'CY', 'DUXM', 'HLM', 'KAB', 'KAM', 'KAS', 'PRM', 'SLS', 'SR1', 'SR2',
@@ -42,7 +46,10 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
     {'title': 'Bike', 'icon': const Icon(Icons.directions_bike_outlined)},
     {'title': 'Heavy', 'icon': const Icon(Icons.local_shipping_outlined)}
   ];
-  var _vehicleSelected = 'Car';
+
+  get vehicleChoice => _vehicleChoice;
+
+  String vehicleSelected = 'Car';
 
   @override
   Widget build(BuildContext context) => CarparkDetailAndFeeView(this);
@@ -50,26 +57,6 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   @override
   initState() {
     super.initState();
-  }
-
-  PopupMenuButton buildVehicleType(){
-    return PopupMenuButton<String>(
-        onSelected: (choice) async {
-          _vehicleSelected = choice;
-          calculateFee(_startDate, _endDate);
-        },
-        itemBuilder: (BuildContext context) {
-          return _vehicleChoice.map((ch){
-            return PopupMenuItem<String>(
-                value: ch['title'].toString(),
-                child: ListTile(
-                    leading: ch['icon'] as Widget,
-                    title: Text(ch['title'].toString())
-                )
-            );
-          }).toList();
-        }
-    );
   }
 
   ListView buildTheCarparkDetails() {
@@ -85,56 +72,44 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
     );
   }
 
-  OutlinedButton buildStartDate(){
-    return OutlinedButton(
-        style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.black)),
-        onPressed: (){
-          DatePicker.showDateTimePicker(context,
-              showTitleActions: true,
-              minTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
-              maxTime: DateTime(DateTime.now().year+1, 12, 31),
-              theme: const DatePickerTheme(headerColor: Colors.blue,
-                  backgroundColor: Colors.white,
-                  itemStyle: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18),
-                  doneStyle:TextStyle(color: Colors.white, fontSize: 16)),
-              onConfirm: (startDate) {setState(() {
-                _formattedStartDate = formatDate(startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
-              });
-                calculateFee(startDate,_endDate);
-              },
-              currentTime: _startDate);
+  void buildStartDate(){
+    DatePicker.showDateTimePicker(context,
+        showTitleActions: true,
+        minTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
+        maxTime: DateTime(DateTime.now().year+1, 12, 31),
+        theme: const DatePickerTheme(headerColor: Colors.blue,
+            backgroundColor: Colors.white,
+            itemStyle: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 18),
+            doneStyle:TextStyle(color: Colors.white, fontSize: 16)),
+        onConfirm: (startDate) {setState(() {
+          _formattedStartDate = formatDate(startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
+        });
+        calculateFee();
         },
-        child: Text(_formattedStartDate, style: const TextStyle(color: Colors.blue),)
-    );
+        currentTime: _startDate);
   }
 
-  OutlinedButton buildEndDate(){
-    return OutlinedButton(
-        style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.black)),
-        onPressed: (){
-          DatePicker.showDateTimePicker(context,
-              showTitleActions: true,
-              minTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
-              maxTime: DateTime(DateTime.now().year+1, 12, 31),
-              theme: const DatePickerTheme(headerColor: Colors.blue,
-                  backgroundColor: Colors.white,
-                  itemStyle: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18),
-                  doneStyle:TextStyle(color: Colors.white, fontSize: 16)),
-              onConfirm: (endDate) { setState(() {
-                _formattedEndDate = formatDate(endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
-              });
-              calculateFee(_startDate,endDate);
-              },
-              currentTime: _endDate);
+  void buildEndDate(){
+    DatePicker.showDateTimePicker(context,
+        showTitleActions: true,
+        minTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
+        maxTime: DateTime(DateTime.now().year+1, 12, 31),
+        theme: const DatePickerTheme(headerColor: Colors.blue,
+            backgroundColor: Colors.white,
+            itemStyle: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 18),
+            doneStyle:TextStyle(color: Colors.white, fontSize: 16)),
+        onConfirm: (endDate) { setState(() {
+          _formattedEndDate = formatDate(endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
+        });
+        calculateFee();
         },
-        child: Text(_formattedEndDate, style: const TextStyle(color: Colors.blue),)
-    );
+        currentTime: _endDate);
   }
 
   List<String> getAttribute(Carpark carpark){
@@ -180,18 +155,22 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
     );
   }
 
-  void calculateFee(DateTime start, DateTime end) {
+  void calculateFee() {
+    calculateFeea(_startDate, _endDate);
+  }
+
+  void calculateFeea(DateTime start, DateTime end) {
     if(_carparkToShowDetail is PrivateCarpark){
       calculateFeePrivate(start, end);
     }
     else {
-      if (_vehicleSelected == 'Car') {
+      if (vehicleSelected == 'Car') {
         calculateFeeCarHDB(start, end);
       }
-      else if(_vehicleSelected == 'Bike'){
+      else if(vehicleSelected == 'Bike'){
         calculateFeeBikeHDB(start, end);
       }
-      else if(_vehicleSelected == 'Heavy'){
+      else if(vehicleSelected == 'Heavy'){
         calculateFeeHeavyHDB(start, end);
       }
     }

@@ -14,9 +14,25 @@ class CarparkDetailAndFeeView extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Details"),
         actions: <Widget>[
-          state.buildVehicleType()
+          PopupMenuButton<String>(
+              onSelected: (choice) async {
+                state.vehicleSelected = choice;
+                state.calculateFee();
+              },
+              itemBuilder: (BuildContext context) {
+                return state.vehicleChoice.map<PopupMenuEntry<String>>((ch){
+                  return PopupMenuItem<String>(
+                      value: ch['title'].toString(),
+                      child: ListTile(
+                          leading: ch['icon'] as Widget,
+                          title: Text(ch['title'].toString())
+                      )
+                  );
+                }).toList();
+              }
+          )
         ]
-        ),
+      ),
       body: Column(
         children: <Widget> [
           Center(
@@ -40,8 +56,20 @@ class CarparkDetailAndFeeView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget> [
-              state.buildStartDate(),
-              state.buildEndDate()
+              OutlinedButton(
+              style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.black)),
+              onPressed: (){
+                state.buildStartDate();
+              },
+              child: Text(state.formattedStartDate, style: const TextStyle(color: Colors.blue),)
+              ),
+              OutlinedButton(
+                  style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.black)),
+                  onPressed: (){
+                    state.buildEndDate();
+                  },
+                  child: Text(state.formattedEndDate, style: const TextStyle(color: Colors.blue),)
+              )
             ],
           ),
           Center(
