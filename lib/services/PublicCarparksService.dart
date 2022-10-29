@@ -17,7 +17,7 @@ class PublicCarparksService extends CarparksService{
     return CarparksService.requestJson(url);
   }
 
-  Future<Map<String, dynamic>> getCarpark(String carparkID) async {
+  Future<Map<String, dynamic>> getCarparkByID(String carparkID) async {
     String url = '${this.url}carparks/id?carpark_id=$carparkID';
     return CarparksService.requestJson(url);
   }

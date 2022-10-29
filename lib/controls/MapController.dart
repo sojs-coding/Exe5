@@ -267,7 +267,7 @@ class MapScreenState extends State<MapScreen> {
   }
 
   Future<List<Carpark>> _searchByCarparkID(String carparkID) async {
-    var response = await PublicCarparksService().getCarpark(carparkID);
+    var response = await PublicCarparksService().getCarparkByID(carparkID);
     CarparkFactory carparkFactory = CarparkFactory();
 
     List<Carpark> listOfCarparks = [];
