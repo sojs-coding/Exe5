@@ -39,26 +39,29 @@ class SortService {
   List<Carpark> sortByAvailability(List<Carpark> carparks) {
     List<Carpark> carparkToReturn = [];
     List<Carpark> privateCarpark = [];
+
+    void swap(int i, int j) {
+      Carpark temp = carparkToReturn[i];
+      carparkToReturn[i] = carparkToReturn[j];
+      carparkToReturn[j] = temp;
+    }
+
     for (var carpark in carparks) {
-      int i = 0;
       int currentAvailability = 0;
       int listElementAvailability = 0;
-      for (; i < carparkToReturn.length; i++) {
-        if (carpark is PublicCarpark) {
-          currentAvailability =
-              carpark.getLatestAvailability()?.availableLots ?? 0;
-          if (carparkToReturn[i] is PublicCarpark) {
-            listElementAvailability = (carparkToReturn[i] as PublicCarpark).getLatestAvailability()?.availableLots ?? 0;
-            if (currentAvailability <= listElementAvailability) {
-              break;
-            }
+      if (carpark is PublicCarpark)
+      {
+        carparkToReturn.add(carpark);
+        currentAvailability = carpark.getLatestAvailability()?.availableLots ?? 0;
+        int j = carparkToReturn.length-1;
+        for (int i = carparkToReturn.length-2; i >= 0; i--) {
+          listElementAvailability = (carparkToReturn[i] as PublicCarpark).getLatestAvailability()?.availableLots ?? 0;
+          if (currentAvailability > listElementAvailability) {
+            swap(i, j--);
           }
         }
       }
-      if(carpark is PublicCarpark) {
-        carparkToReturn.insert(i, carpark);
-      }
-      if(carpark is PrivateCarpark){
+      else {
         privateCarpark.add(carpark);
       }
     }

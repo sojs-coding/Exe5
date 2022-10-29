@@ -22,7 +22,7 @@ class CarparkDetailAndFeeScreen extends StatefulWidget {
 class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
 
   late final Carpark _carparkToShowDetail = widget.carparkToShowDetail;
-  late final Map<String, dynamic> _carparkDetails = _carparkToShowDetail.toMap();
+  late Map<String, dynamic> _carparkDetails;
   Map<String, dynamic> get carparkDetails => _carparkDetails;
 
   late DateTime _endDate = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,DateTime.now().hour,DateTime.now().minute);
@@ -60,6 +60,8 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   @override
   initState() {
     super.initState();
+    _carparkDetails = _carparkToShowDetail.toMap();
+    _carparkDetails.addAll({"Available Lots" : (_carparkToShowDetail as PublicCarpark).getLatestAvailability()?.availableLots});
   }
 
   void buildStartDate(){
