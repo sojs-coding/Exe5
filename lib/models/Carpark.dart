@@ -12,5 +12,5 @@ abstract class Carpark {
         xCoordWGS84 = parsedJson['x_coord_WGS84'],
         yCoordWGS84 = parsedJson['y_coord_WGS84'];
 
-  num getFee(int durationInMinutes);
+
 }

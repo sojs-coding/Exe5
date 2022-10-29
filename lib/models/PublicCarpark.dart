@@ -36,13 +36,6 @@ class PublicCarpark extends Carpark {
         totalLots = parsedJson['total_lots'],
         super.fromJson(id, parsedJson);
 
-  num getFee(int durationInMinutes)
-  {
-    int halfAndHourCount = (durationInMinutes / 30).ceil();
-    num total = halfAndHourCount * shortTermParkingFare['car'];
-    return total;
-  }
-
   void addAvailability(Availability availability) {
     availabilityList.insert(0, availability);
   }
