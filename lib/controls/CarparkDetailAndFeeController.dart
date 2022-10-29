@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_parkwhere/models/Carpark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_parkwhere/models/PrivateCarpark.dart';
@@ -6,9 +5,7 @@ import 'package:flutter_parkwhere/models/PublicCarpark.dart';
 import 'package:flutter_parkwhere/screens/CarparkDetailAndFee.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:date_format/date_format.dart';
-
 import '../interfaces/CalculateFee.dart';
-import '../models/Carpark.dart';
 
 class CarparkDetailAndFeeScreen extends StatefulWidget {
 
@@ -46,7 +43,7 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
 
   String vehicleSelected = 'Car';
 
-  late CalculateFee calculator;
+  late CalculateFee _calculator;
 
   @override
   Widget build(BuildContext context) => CarparkDetailAndFeeView(this);
@@ -55,7 +52,9 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   initState() {
     super.initState();
     _carparkDetails = _carparkToShowDetail.toMap();
-    _carparkDetails.addAll({"Available Lots" : (_carparkToShowDetail as PublicCarpark).getLatestAvailability()?.availableLots});
+    if (_carparkToShowDetail is PublicCarpark) {
+      _carparkDetails.addAll({"Available Lots" : (_carparkToShowDetail as PublicCarpark).getLatestAvailability()?.availableLots});
+    }
     setCalculator();
   }
 
@@ -74,7 +73,7 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
         onConfirm: (startDate) {setState(() {
           _startDate = startDate;
           _formattedStartDate = formatDate(startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
-          _price = calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
+          _price = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
         });
         },
         currentTime: _startDate);
@@ -95,7 +94,7 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
         onConfirm: (endDate) { setState(() {
           _endDate = endDate;
           _formattedEndDate = formatDate(endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
-          _price = calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
+          _price = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
         });
         },
         currentTime: _endDate);
@@ -103,21 +102,21 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
 
   void setCalculator(){
     if(_carparkToShowDetail is PrivateCarpark){
-      calculator = CalculatePrivateFee();
+      _calculator = CalculatePrivateFee();
     }
     else {
       if (vehicleSelected == 'Car') {
-        calculator = CalculateCarPublicFee();
+        _calculator = CalculateCarPublicFee();
       }
       else if(vehicleSelected == 'Bike'){
-        calculator = CalculateBikePublicFee();
+        _calculator = CalculateBikePublicFee();
       }
       else if(vehicleSelected == 'Heavy'){
-        calculator = CalculateHeavyPublicFee();
+        _calculator = CalculateHeavyPublicFee();
       }
     }
     setState(() {
-      _price = calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
+      _price = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
     });
   }
 
