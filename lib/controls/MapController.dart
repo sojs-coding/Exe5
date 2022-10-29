@@ -119,6 +119,33 @@ class MapScreenState extends State<MapScreen> {
       _searched = true;
       _searchingForCarparks = true;
       var place = await LocationService().getPlace(searchController.text);
+      if(place.isEmpty) {
+        _searched = false;
+        _searchingForCarparks = false;
+        searchController.clear();
+        return showDialog<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Invalid Destination'),
+              content: const Text('No such place exist in the\n'
+                                  'world.'),
+              actions: <Widget>[
+                TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+
       location = await _getCoordinateOfPlace(place);
 
       nearest5Carparks.clear();
