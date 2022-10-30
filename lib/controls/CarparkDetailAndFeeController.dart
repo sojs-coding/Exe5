@@ -36,7 +36,6 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
 
   String _price = "0.0";
   String get price => _price;
-  double _priceDouble = 0;
 
   final _vehicleChoice = [
     {'title': 'Car', 'icon': const Icon(Icons.directions_car_filled_outlined)},
@@ -82,9 +81,9 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
         onConfirm: (startDate) {setState(() {
           _startDate = startDate;
           _formattedStartDate = formatDate(startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
-          _priceDouble = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
-          if(_priceDouble != -1){
-            _price = double.parse(_priceDouble.toStringAsFixed(2)).toString();
+          double priceDouble = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
+          if(priceDouble != -1){
+            _price = double.parse(priceDouble.toStringAsFixed(2)).toString();
           }
           else{
             _price = "NA";
@@ -109,9 +108,9 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
         onConfirm: (endDate) { setState(() {
           _endDate = endDate;
           _formattedEndDate = formatDate(endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
-          _priceDouble = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
-          if(_priceDouble != -1){
-            _price = double.parse(_priceDouble.toStringAsFixed(2)).toString();
+          double priceDouble = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
+          if(priceDouble != -1){
+            _price = double.parse(priceDouble.toStringAsFixed(2)).toString();
           }
           else{
             _price = "NA";
@@ -137,9 +136,9 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
       }
     }
     setState(() {
-      _priceDouble = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
-      if(_priceDouble != -1){
-        _price = double.parse(_priceDouble.toStringAsFixed(2)).toString();
+      double priceDouble = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
+      if(priceDouble != -1){
+        _price = double.parse(priceDouble.toStringAsFixed(2)).toString();
       }
       else{
         _price = "NA";
