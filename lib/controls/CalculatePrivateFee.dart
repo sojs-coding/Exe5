@@ -4,7 +4,7 @@ import 'package:flutter_parkwhere/models/PrivateCarpark.dart';
 
 class CalculatePrivateFee with CalculateFee{
   @override
-  String calculateFee(DateTime start, DateTime end, String vehicleSelected, Carpark carpark) {
+  double calculateFee(DateTime start, DateTime end, String vehicleSelected, Carpark carpark) {
     double temp = 0;
     PrivateCarpark tempCarpark = carpark as PrivateCarpark;
     if(start.compareTo(end) < 0){
@@ -28,6 +28,6 @@ class CalculatePrivateFee with CalculateFee{
       }
       start = start.add(const Duration(minutes: 30));
     }
-    return double.parse(temp.toStringAsFixed(2)).toString();
+    return temp;
   }
 }

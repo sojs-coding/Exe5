@@ -4,9 +4,8 @@ import 'package:flutter_parkwhere/models/PublicCarpark.dart';
 
 class CalculateBikePublicFee with CalculateFee{
   @override
-  String calculateFee(DateTime start, DateTime end, String vehicleSelected, Carpark carpark) {
+  double calculateFee(DateTime start, DateTime end, String vehicleSelected, Carpark carpark) {
     double temp = 0;
-    String returnString = "";
     PublicCarpark tempCarpark = carpark as PublicCarpark;
     if(checkOvernightParking(start, end, tempCarpark)) {//check if start - end within day time
       int interval = 0;
@@ -23,11 +22,8 @@ class CalculateBikePublicFee with CalculateFee{
       temp = 0.65 * interval;
     }
     else{
-      returnString = "NA";
+      temp = -1;
     }
-    if(returnString == ""){
-      return double.parse(temp.toStringAsFixed(2)).toString();
-    }
-    return returnString;
+    return temp;
   }
 }

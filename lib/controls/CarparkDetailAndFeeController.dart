@@ -36,6 +36,7 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
 
   String _price = "0.0";
   String get price => _price;
+  double _priceDouble = 0;
 
   final _vehicleChoice = [
     {'title': 'Car', 'icon': const Icon(Icons.directions_car_filled_outlined)},
@@ -81,7 +82,13 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
         onConfirm: (startDate) {setState(() {
           _startDate = startDate;
           _formattedStartDate = formatDate(startDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
-          _price = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
+          _priceDouble = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
+          if(_priceDouble != -1){
+            _price = double.parse(_priceDouble.toStringAsFixed(2)).toString();
+          }
+          else{
+            _price = "NA";
+          }
         });
         },
         currentTime: _startDate);
@@ -102,7 +109,13 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
         onConfirm: (endDate) { setState(() {
           _endDate = endDate;
           _formattedEndDate = formatDate(endDate, [dd,'-',mm,'-',yy,' ',HH,':',nn]);
-          _price = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
+          _priceDouble = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
+          if(_priceDouble != -1){
+            _price = double.parse(_priceDouble.toStringAsFixed(2)).toString();
+          }
+          else{
+            _price = "NA";
+          }
         });
         },
         currentTime: _endDate);
@@ -124,7 +137,13 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
       }
     }
     setState(() {
-      _price = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
+      _priceDouble = _calculator.calculateFee(_startDate, _endDate, vehicleSelected, _carparkToShowDetail);
+      if(_priceDouble != -1){
+        _price = double.parse(_priceDouble.toStringAsFixed(2)).toString();
+      }
+      else{
+        _price = "NA";
+      }
     });
   }
 

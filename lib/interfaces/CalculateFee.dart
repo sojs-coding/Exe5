@@ -12,8 +12,7 @@ mixin CalculateFee {
     DateTime(2022,5,15), DateTime(2022,5,16), DateTime(2022,7,10), DateTime(2022,7,11), DateTime(2022,8,9), DateTime(2022,10,24),
     DateTime(2022,12,25), DateTime(2022,12,26)];
 
-  String calculateFee(DateTime start, DateTime end, String vehicleSelected,
-      Carpark carpark);
+  double calculateFee(DateTime start, DateTime end, String vehicleSelected, Carpark carpark);
 
   bool checkOvernightParking(DateTime start, DateTime end, PublicCarpark carpark){
     if(carpark.nightParking == true || //check if night parking available, if not
