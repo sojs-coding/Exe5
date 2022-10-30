@@ -3,14 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_parkwhere/models/Carpark.dart';
-import 'package:flutter_parkwhere/models/PublicCarpark.dart';
 import 'package:flutter_parkwhere/services/AllCarparksService.dart';
 import 'package:flutter_parkwhere/factories/CarparkFactory.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_parkwhere/services/LocationService.dart';
 import 'package:flutter_parkwhere/screens/Map.dart';
 import '../services/PublicCarparksService.dart';
-import 'CarparkDetailAndFeeController.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -54,8 +52,12 @@ class MapScreenState extends State<MapScreen> {
 
   late BitmapDescriptor myIcon;
 
-  double pinPillPosition = -200;
-  int currentCarparkPin = 0;
+  double _pinPillPosition = -200;
+
+  double get pinPillPosition => _pinPillPosition;
+  int _currentCarparkPin = 0;
+
+  int get currentCarparkPin => _currentCarparkPin;
 
   @override
   initState() {
@@ -194,10 +196,8 @@ class MapScreenState extends State<MapScreen> {
 
       nearest5Carparks.addAll(await _searchByCarparkID(searchController.text.toUpperCase()));
       if(nearest5Carparks.isNotEmpty) {
-        currentCarparkPin = 0;
+        _currentCarparkPin = 0;
         for (Carpark carpark in nearest5Carparks) {
-          
-          location = LatLng(carpark.xCoordWGS84, carpark.yCoordWGS84);
           setState(() {
             markers.add(
               _getCarparkMarker(carpark)
@@ -283,8 +283,8 @@ class MapScreenState extends State<MapScreen> {
 
       onTap: () {
         setState(() {
-          currentCarparkPin = nearest5Carparks.indexWhere((nearest5Carparks) => nearest5Carparks.carparkId == carpark.carparkId);
-          pinPillPosition = 0;
+          _currentCarparkPin = nearest5Carparks.indexWhere((nearest5Carparks) => nearest5Carparks.carparkId == carpark.carparkId);
+          _pinPillPosition = 0;
         });
       },
       icon: myIcon
@@ -298,8 +298,8 @@ class MapScreenState extends State<MapScreen> {
       onTap: () {
         _markerPressed = true;
         setState(() {
-          currentCarparkPin = nearest5Carparks.indexWhere((nearest5Carparks) => nearest5Carparks.carparkId == carpark.carparkId);
-          pinPillPosition = 0;
+          _currentCarparkPin = nearest5Carparks.indexWhere((nearest5Carparks) => nearest5Carparks.carparkId == carpark.carparkId);
+          _pinPillPosition = 0;
         });
       },
       icon: myIcon
@@ -327,55 +327,9 @@ class MapScreenState extends State<MapScreen> {
     return listOfCarparks;
   }
 
-
-  Widget buildAvatar() {
-    return Container(
-      margin: EdgeInsets.only(left: 10),
-      width: 70,
-      height: 70,
-      child: ClipOval(
-        child: Image.asset(
-          'assets/car_icon.png',
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
-  Widget buildLocationInfo() {
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.only(left: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (nearest5Carparks.isNotEmpty && currentCarparkPin != -1) 
-            Text(
-              "ID: ${nearest5Carparks[currentCarparkPin].carparkId}"
-            ),
-            
-            if (nearest5Carparks.isNotEmpty && currentCarparkPin != -1) 
-            Text(
-              nearest5Carparks[currentCarparkPin].address,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)
-            ),
-            ElevatedButton(
-              child: Text('More Details'),
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                                CarparkDetailAndFeeScreen(carparkToShowDetail: nearest5Carparks[currentCarparkPin])));
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   dismissPinPill() async {
     setState(() {
-      pinPillPosition = -200;
+      _pinPillPosition = -200;
     });
   }
 }

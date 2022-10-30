@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_parkwhere/controls/CarparkDetailAndFeeController.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../controls/SortController.dart';
 import 'package:flutter_parkwhere/controls/MapController.dart';
@@ -160,8 +161,45 @@ class MapScreenView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      state.buildAvatar(),
-                      state.buildLocationInfo(),
+                      Container(
+                        margin: EdgeInsets.only(left: 10),
+                        width: 70,
+                        height: 70,
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/car_icon.png',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          margin: EdgeInsets.only(left: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              if (state.nearest5Carparks.isNotEmpty && state.currentCarparkPin != -1)
+                                Text(
+                                    "ID: ${state.nearest5Carparks[state.currentCarparkPin].carparkId}"
+                                ),
+
+                              if (state.nearest5Carparks.isNotEmpty && state.currentCarparkPin != -1)
+                                Text(
+                                    state.nearest5Carparks[state.currentCarparkPin].address,
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)
+                                ),
+                              ElevatedButton(
+                                child: Text('More Details'),
+                                onPressed: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                      CarparkDetailAndFeeScreen(carparkToShowDetail: state.nearest5Carparks[state.currentCarparkPin])));
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
