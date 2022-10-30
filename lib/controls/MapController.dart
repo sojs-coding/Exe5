@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_parkwhere/models/Carpark.dart';
+import 'package:flutter_parkwhere/models/PublicCarpark.dart';
 import 'package:flutter_parkwhere/services/AllCarparksService.dart';
 import 'package:flutter_parkwhere/factories/CarparkFactory.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_parkwhere/services/LocationService.dart';
 import 'package:flutter_parkwhere/screens/Map.dart';
 import '../services/PublicCarparksService.dart';
+import 'CarparkDetailAndFeeController.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -22,8 +24,8 @@ class MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) => MapScreenView(this);
 
   static final CameraPosition kGooglePlex = CameraPosition(
-    target: LatLng(1.287953, 103.851784),
-    zoom: 14.4746,
+    target: LatLng(1.304833, 103.831833),
+    zoom: 16,
   );
 
   LatLng _cameraLatLng = kGooglePlex.target;
@@ -50,12 +52,22 @@ class MapScreenState extends State<MapScreen> {
   final Completer<GoogleMapController> _controller = Completer();
   final TextEditingController searchController = TextEditingController();
 
+  late BitmapDescriptor myIcon;
+
+  double pinPillPosition = -200;
+  int currentCarparkPin = 0;
+
   @override
   initState() {
     super.initState();
     rootBundle.loadString('assets/map_style.txt').then((string) {
       _mapStyle = string;
     });
+    BitmapDescriptor.fromAssetImage(
+          ImageConfiguration(size: Size(28, 28)), 'assets/carpark_marker.png')
+          .then((onValue) {
+        myIcon = onValue;
+      });
   }
 
   onMapCreated(GoogleMapController controller) {
@@ -182,7 +194,9 @@ class MapScreenState extends State<MapScreen> {
 
       nearest5Carparks.addAll(await _searchByCarparkID(searchController.text.toUpperCase()));
       if(nearest5Carparks.isNotEmpty) {
+        currentCarparkPin = 0;
         for (Carpark carpark in nearest5Carparks) {
+          
           location = LatLng(carpark.xCoordWGS84, carpark.yCoordWGS84);
           setState(() {
             markers.add(
@@ -257,8 +271,7 @@ class MapScreenState extends State<MapScreen> {
       markerId: MarkerId('1'),
       position: LatLng(latlng.latitude + 0.00008, latlng.longitude),
       infoWindow: InfoWindow(title: 'Destination'),
-      icon:
-      BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
     );
     return marker;
   }
@@ -267,9 +280,14 @@ class MapScreenState extends State<MapScreen> {
     return Marker(
       markerId: MarkerId(carpark.carparkId),
       position: LatLng(carpark.xCoordWGS84, carpark.yCoordWGS84),
-      infoWindow: InfoWindow(
-        title: carpark.address,
-      ),
+
+      onTap: () {
+        setState(() {
+          currentCarparkPin = nearest5Carparks.indexWhere((nearest5Carparks) => nearest5Carparks.carparkId == carpark.carparkId);
+          pinPillPosition = 0;
+        });
+      },
+      icon: myIcon
     );
   }
 
@@ -277,10 +295,14 @@ class MapScreenState extends State<MapScreen> {
     return Marker(
       markerId: MarkerId(carpark.carparkId),
       position: LatLng(carpark.xCoordWGS84, carpark.yCoordWGS84),
-      infoWindow: InfoWindow(
-        title: carpark.address,
-      ),
-      onTap: () {_markerPressed = true;}
+      onTap: () {
+        _markerPressed = true;
+        setState(() {
+          currentCarparkPin = nearest5Carparks.indexWhere((nearest5Carparks) => nearest5Carparks.carparkId == carpark.carparkId);
+          pinPillPosition = 0;
+        });
+      },
+      icon: myIcon
     );
   }
 
@@ -303,5 +325,57 @@ class MapScreenState extends State<MapScreen> {
       listOfCarparks.add(carparkFactory.getCarpark(key, value));
     });
     return listOfCarparks;
+  }
+
+
+  Widget buildAvatar() {
+    return Container(
+      margin: EdgeInsets.only(left: 10),
+      width: 70,
+      height: 70,
+      child: ClipOval(
+        child: Image.asset(
+          'assets/car_icon.png',
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  Widget buildLocationInfo() {
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.only(left: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            if (nearest5Carparks.isNotEmpty && currentCarparkPin != -1) 
+            Text(
+              "ID: ${nearest5Carparks[currentCarparkPin].carparkId}"
+            ),
+            
+            if (nearest5Carparks.isNotEmpty && currentCarparkPin != -1) 
+            Text(
+              nearest5Carparks[currentCarparkPin].address,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)
+            ),
+            ElevatedButton(
+              child: Text('More Details'),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                CarparkDetailAndFeeScreen(carparkToShowDetail: nearest5Carparks[currentCarparkPin])));
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  dismissPinPill() async {
+    setState(() {
+      pinPillPosition = -200;
+    });
   }
 }

@@ -44,6 +44,9 @@ class MapScreenView extends StatelessWidget {
                     onCameraMove: (CameraPosition cameraPosition) {
                       state.onCameraMove(cameraPosition);
                     },
+                    onTap: (LatLng location) {
+                      state.dismissPinPill();
+                    }
                   ),
                 ),
               ],
@@ -133,6 +136,37 @@ class MapScreenView extends StatelessWidget {
                 child: const Icon(Icons.all_inbox_sharp),
               ),
             ),
+            AnimatedPositioned(
+              bottom: state.pinPillPosition,
+              right: 0,
+              left: 0,
+              duration: const Duration(milliseconds: 200),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  margin: const EdgeInsets.all(20),
+                  height: 150,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.all(Radius.circular(30)),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          blurRadius: 20,
+                          offset: Offset.zero,
+                          color: Colors.grey.withOpacity(0.5),
+                        )
+                      ]),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      state.buildAvatar(),
+                      state.buildLocationInfo(),
+                    ],
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),
