@@ -24,11 +24,11 @@ class PrivateCarpark extends Carpark implements IsMappable{
     Map<String, dynamic> map = {};
     map.addAll(super.toMap());
     map.addAll({
-      "weekdayParkingFare" : weekdayParkingFare,
-      "saturdayParkingFare" : saturdayParkingFare,
-      "sundayPhParkingFare" : sundayPhParkingFare,
-      "weekdayEntryFare" : weekdayEntryFare,
-      "weekendEntryFare" : weekendEntryFare
+      "Weekday Parking Fare" : weekdayParkingFare,
+      "Saturday Parking Fare" : saturdayParkingFare,
+      "Sunday / Public Holiday Parking Fare" : sundayPhParkingFare,
+      "Weekday Entry Fare" : weekdayEntryFare,
+      "Weekend Entry Fare" : weekendEntryFare
     });
     return map;
   }

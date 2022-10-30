@@ -55,6 +55,9 @@ class CarparkDetailAndFeeState extends State<CarparkDetailAndFeeScreen> {
   @override
   initState() {
     super.initState();
+    _carparkDetails.addAll(
+        {"Carpark Access" : (_carparkToShowDetail is PublicCarpark)
+            ? "Public Carpark" : "Private Carpark"});
     _carparkDetails = _carparkToShowDetail.toMap();
     if (_carparkToShowDetail is PublicCarpark) {
       _carparkDetails.addAll({"Available Lots" : (_carparkToShowDetail as PublicCarpark).getLatestAvailability()?.availableLots});

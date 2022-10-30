@@ -65,16 +65,16 @@ class PublicCarpark extends Carpark implements IsMappable {
     Map<String, dynamic> map = {};
     map.addAll(super.toMap());
     map.addAll({
-      "carparkType" : carparkType,
-      "electronicParkingSystem" : electronicParkingSystem,
-      "shortTermParking" : shortTermParking,
-      "shortTermParkingFare" : shortTermParkingFare,
-      "freeParking" : freeParking,
-      "nightParking" : nightParking,
-      "carparkDeckNumber" : carparkDeckNumber,
-      "gantryHeight" : gantryHeight,
-      "carparkBasement" : carparkBasement,
-      "totalLots" : totalLots
+      "Carpark Type" : carparkType,
+      "Electronic Parking System" : electronicParkingSystem,
+      "Short Term Parking" : shortTermParking,
+      "Short Term Parking Fare" : shortTermParkingFare,
+      "Free Parking" : freeParking,
+      "Night Parking" : nightParking,
+      "Carpark Deck Number" : carparkDeckNumber,
+      "Gantry Height" : gantryHeight,
+      "Carpark Basement" : carparkBasement,
+      "Total Lots" : totalLots
     });
     return map;
   }
