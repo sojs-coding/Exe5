@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 abstract class CarparksService {
-  String url = 'http://192.168.0.135:5000/';
+  String url = 'http://10.0.2.2:5000/';
 
   Future<Map<String, dynamic>> getCarparks(double x, double y, int carparkCount);
 
