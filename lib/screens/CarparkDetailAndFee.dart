@@ -12,7 +12,7 @@ class CarparkDetailAndFeeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Details"),
+        title: Text(state.carparkDetails.values.elementAt(1)),
         actions: <Widget>[
           PopupMenuButton<String>(
               onSelected: (choice) async {
@@ -33,8 +33,94 @@ class CarparkDetailAndFeeView extends StatelessWidget {
           )
         ]
       ),
-      body: Column(
+      body: SingleChildScrollView(
+        child: Column(
         children: <Widget> [
+          Container(
+            height: 200.0,
+            width: 350.0,
+            margin: const EdgeInsets.only(top: 20.0),
+            decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/carpark.jpg'),
+                  fit: BoxFit.fill,
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(20))
+            ),
+          ),
+          Container(
+            height: 200,
+            //color: Colors.red,
+            margin: const EdgeInsets.only(top: 20.0),
+            child: Column(
+                children: [
+                  Text(
+                      state.carparkDetails.values.elementAt(2),
+                      style: const TextStyle(fontWeight: FontWeight.bold, height: 1.5, fontSize: 20),
+                      textAlign: TextAlign.center
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                          margin: const EdgeInsets.all(1),
+                          child: Text(
+                              state.carparkDetails.values.elementAt(3).toString(),
+                              style: const TextStyle(height: 1.5, fontSize: 12),
+                              textAlign: TextAlign.center
+                          )
+                      ),
+                      Container( //apply margin and padding using Container Widget.
+                          padding: const EdgeInsets.all(1), //You can use EdgeInsets like above
+                          margin: const EdgeInsets.all(1),
+                          child: Text(
+                              state.carparkDetails.values.elementAt(4).toString(),
+                              style: const TextStyle(height: 1.5, fontSize: 12),
+                              textAlign: TextAlign.center
+                          )
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left:50, top:25), //apply padding to some sides only
+                            child: Text(
+                              state.carparkDetails.values.elementAt(0),
+                              maxLines: 3,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 50, top:25), //apply padding to some sides only
+                            child: Text(
+                              (state.carparkDetails.values.elementAt(0) == "Private Carpark") ? "Availability: Not Available" : "Availability: ${state.carparkDetails.values.elementAt(15)}",
+                              maxLines: 3,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ]
+            ),
+          ),
+          const Text(
+              "Full Information:",
+              style: TextStyle(height: 1.5, fontSize: 20),
+              textAlign: TextAlign.left
+          ),
           Center(
             child: Card(
               elevation: 0,
@@ -97,13 +183,14 @@ class CarparkDetailAndFeeView extends StatelessWidget {
                   child:
                   Text(
                     "\$${state.price}SGD",
-                    style: const TextStyle(fontSize: 50)
+                    style: const TextStyle(fontSize: 30)
                   )
                 ),
               ),
             )
           )
         ],
+        )
       )
     );
   }

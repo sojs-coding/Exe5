@@ -203,6 +203,7 @@ class MapScreenState extends State<MapScreen> {
             );
         });
         }
+        location = LatLng(nearest5Carparks[0].xCoordWGS84, nearest5Carparks[0].yCoordWGS84);
         await _panToCoordinate(location);
         _searched = false;
         _searchingForCarparks = false;
