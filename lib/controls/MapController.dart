@@ -109,7 +109,6 @@ class MapScreenState extends State<MapScreen> {
 
         nearest5Carparks.addAll(await _getAllCarparks(location));
         for (Carpark carpark in nearest5Carparks) {
-          Marker marker = _getCarparkMarker(carpark);
           markers.add(
               _getPanningCarparkMarker(carpark)
           );
