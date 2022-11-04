@@ -484,7 +484,7 @@ def create_app():
 
         return jsonify(response_dict), 200
 
-    @app.route('/carparks/id/', methods=['GET'])
+    @app.route('/carparks/id', methods=['GET'])
     def return_carpark_by_id():
         # Carpark id params
         carpark_id = request.args.get('carpark_id', default=None, type=str)
@@ -581,8 +581,8 @@ def create_app():
     # Create all required tables
     with app.app_context():
         db.create_all()
-        PublicCarParkInfo.update_table()
-        PrivateCarParkInfo.update_table()
-        CarParkAvailability.update_table()
+        # PublicCarParkInfo.update_table()
+        # PrivateCarParkInfo.update_table()
+        # CarParkAvailability.update_table()
 
     return app
